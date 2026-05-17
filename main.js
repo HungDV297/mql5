@@ -33,11 +33,17 @@ const paymentDepositAmount = document.getElementById('paymentDepositAmount');
 const paymentQrImage = document.getElementById('paymentQrImage');
 const paymentTransferContent = document.getElementById('paymentTransferContent');
 const depositConfirmBtn = document.getElementById('depositConfirmBtn');
+const paymentWaitingState = document.getElementById('paymentWaitingState');
+const paymentPaidState = document.getElementById('paymentPaidState');
 
-const COACHING_PRODUCT_ID = 1;
+const COACHING_PRODUCT_ID = 2;
 const PAYMENT_QR_BASE = 'https://qr.sepay.vn/img?acc=4358967&bank=ACB';
 const PAYMENT_TRANSFER_PREFIX = 'MQL5_Coc';
+const PAYMENT_POLL_INTERVAL_MS = 4000;
+const PAYMENT_POLL_TIMEOUT_MS = 15 * 60 * 1000;
 const nfVnd = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 0 });
+let paymentPollTimer = null;
+let paymentPollStartedAt = 0;
 
 const leadOptionInputs = {
   register_now: leadOptRegisterNow,
@@ -92,12 +98,35 @@ function rowFirst(rows) {
   return Array.isArray(rows) && rows.length > 0 ? rows[0] : null;
 }
 
+function normalizePhone(phone) {
+  return String(phone ?? '').replace(/\D/g, '');
+}
+
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email ?? '').trim());
+}
+
+function isValidPhone(phone) {
+  const digits = normalizePhone(phone);
+  return digits.length >= 10 && digits.length <= 11;
+}
+
+function stopPaymentPolling() {
+  if (paymentPollTimer) window.clearTimeout(paymentPollTimer);
+  paymentPollTimer = null;
+  paymentPollStartedAt = 0;
+}
+
 function hidePaymentResult() {
+  stopPaymentPolling();
   if (leadModalContent) leadModalContent.classList.remove('is-payment-mode');
   if (leadFormIntro) leadFormIntro.hidden = false;
   if (form) form.hidden = false;
   if (paymentSuccessView) paymentSuccessView.hidden = true;
   if (paymentDepositResult) paymentDepositResult.hidden = true;
+  if (paymentWaitingState) paymentWaitingState.hidden = true;
+  if (paymentPaidState) paymentPaidState.hidden = true;
+  if (depositConfirmBtn) depositConfirmBtn.hidden = false;
 }
 
 function updatePaymentQr(description = PAYMENT_TRANSFER_PREFIX, amount = 1000000) {
@@ -109,13 +138,26 @@ function updatePaymentQr(description = PAYMENT_TRANSFER_PREFIX, amount = 1000000
   }
 }
 
-function showPaymentResult(description, amount) {
+function showPaymentResult(description, amount, orderId) {
   updatePaymentQr(description, amount);
   if (leadModalContent) leadModalContent.classList.add('is-payment-mode');
   if (leadFormIntro) leadFormIntro.hidden = true;
   if (form) form.hidden = true;
   if (paymentSuccessView) paymentSuccessView.hidden = false;
   if (paymentDepositResult) paymentDepositResult.hidden = false;
+  if (paymentWaitingState) paymentWaitingState.hidden = false;
+  if (paymentPaidState) paymentPaidState.hidden = true;
+  if (depositConfirmBtn) depositConfirmBtn.hidden = false;
+  startPaymentPolling(orderId);
+}
+
+function showPaymentPaid() {
+  stopPaymentPolling();
+  if (paymentDepositResult) paymentDepositResult.hidden = true;
+  if (paymentWaitingState) paymentWaitingState.hidden = true;
+  if (depositConfirmBtn) depositConfirmBtn.hidden = true;
+  if (paymentPaidState) paymentPaidState.hidden = false;
+  showMessage('Thanh toán đã được xác nhận. Cảm ơn bạn, mình sẽ liên hệ sớm.', 'success');
 }
 
 async function insertLead(payload) {
@@ -127,14 +169,16 @@ async function insertLead(payload) {
 }
 
 async function findCustomerByPhone(phone) {
+  const phoneDigits = normalizePhone(phone);
   const rows = await supabaseRequest(
-    `/customers?phone=eq.${encodeURIComponent(phone)}&select=*&limit=1`
+    `/customers?phone=eq.${encodeURIComponent(phoneDigits)}&select=*&limit=1`
   );
   return rowFirst(rows);
 }
 
 async function upsertCustomer({ name, email, phone }) {
-  const existing = await findCustomerByPhone(phone);
+  const phoneDigits = normalizePhone(phone);
+  const existing = await findCustomerByPhone(phoneDigits);
   if (existing) return existing;
 
   const rows = await supabaseRequest('/customers', {
@@ -143,8 +187,8 @@ async function upsertCustomer({ name, email, phone }) {
     body: {
       name,
       email,
-      phone,
-      zalo: phone,
+      phone: phoneDigits,
+      zalo: phoneDigits,
     },
   });
   return rowFirst(rows);
@@ -156,7 +200,7 @@ async function createCoachingOrder(customerId) {
       `/products?id=eq.${COACHING_PRODUCT_ID}&select=*&limit=1`
     )
   );
-  if (!product) throw new Error('Không tìm thấy sản phẩm Coaching 1:1 MQL5 (ID 1).');
+  if (!product) throw new Error('Không tìm thấy sản phẩm test Coaching 1:1 MQL5 (ID 2).');
 
   const remaining = Number(product.remaining_quantity) || 0;
   if (remaining < 1) throw new Error('Sản phẩm Coaching 1:1 MQL5 đã hết số lượng.');
@@ -198,6 +242,40 @@ async function createCoachingOrder(customerId) {
   });
 
   return updated ?? { ...inserted, payment_content: paymentContent, amount };
+}
+
+async function fetchOrderStatus(orderId) {
+  const row = rowFirst(
+    await supabaseRequest(
+      `/orders?id=eq.${encodeURIComponent(String(orderId))}&select=id,status&limit=1`
+    )
+  );
+  return String(row?.status ?? '');
+}
+
+function startPaymentPolling(orderId) {
+  stopPaymentPolling();
+  if (!orderId) return;
+  paymentPollStartedAt = Date.now();
+
+  const tick = async () => {
+    try {
+      const status = await fetchOrderStatus(orderId);
+      if (status === 'success') {
+        showPaymentPaid();
+        return;
+      }
+      if (Date.now() - paymentPollStartedAt >= PAYMENT_POLL_TIMEOUT_MS) {
+        showMessage('Chưa thấy xác nhận tự động. Nếu bạn đã chuyển khoản, mình sẽ kiểm tra thủ công.', 'success');
+        return;
+      }
+    } catch {
+      /* keep polling quietly */
+    }
+    paymentPollTimer = window.setTimeout(tick, PAYMENT_POLL_INTERVAL_MS);
+  };
+
+  paymentPollTimer = window.setTimeout(tick, PAYMENT_POLL_INTERVAL_MS);
 }
 
 function openLeadModal(leadType) {
@@ -244,8 +322,7 @@ closeModalTriggers.forEach((trigger) => {
 
 modalCloseBtn?.addEventListener('click', closeLeadModal);
 depositConfirmBtn?.addEventListener('click', () => {
-  showMessage('Đã ghi nhận. Hệ thống sẽ tự cập nhật đơn khi SePay xác nhận giao dịch.', 'success');
-  setTimeout(closeLeadModal, 900);
+  showMessage('Đã ghi nhận. Màn hình này sẽ tự đổi khi SePay xác nhận giao dịch.', 'success');
 });
 updatePaymentQr();
 openConsultationModalTriggers.forEach((trigger) => {
@@ -289,13 +366,23 @@ form?.addEventListener('submit', async (e) => {
 
   const name = nameInput?.value.trim() ?? '';
   const email = emailInput?.value.trim() ?? '';
-  const phone = phoneInput?.value.trim() ?? '';
+  const phone = normalizePhone(phoneInput?.value);
   const wantRegisterNow = Boolean(leadOptRegisterNow?.checked);
   const wantConsultation = Boolean(leadOptConsultation?.checked);
   const wantJoinCommunity = Boolean(leadOptCommunity?.checked);
 
   if (!name || !email || !phone) {
     showMessage('Vui lòng điền đủ các trường bắt buộc.', 'error');
+    return;
+  }
+
+  if (!isValidEmail(email)) {
+    showMessage('Email chưa đúng định dạng.', 'error');
+    return;
+  }
+
+  if (!isValidPhone(phone)) {
+    showMessage('Số điện thoại cần gồm 10-11 chữ số.', 'error');
     return;
   }
 
@@ -318,8 +405,8 @@ form?.addEventListener('submit', async (e) => {
     if (wantRegisterNow) {
       const customer = await upsertCustomer({ name, email, phone });
       const order = await createCoachingOrder(customer.id);
-      showPaymentResult(order.payment_content, order.amount);
-      showMessage('Đã tạo đơn đặt cọc. Bạn chuyển khoản theo QR bên dưới để giữ lịch tư vấn.', 'success');
+      showPaymentResult(order.payment_content, order.amount, order.id);
+      showMessage('Đã tạo đơn đặt cọc. Bạn chuyển khoản theo QR, hệ thống sẽ tự xác nhận khi nhận tiền.', 'success');
       form.reset();
       presetLeadOptions('register_now');
     } else {

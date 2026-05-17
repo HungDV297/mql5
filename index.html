@@ -428,7 +428,7 @@
     <div class="payment-success-view" id="paymentSuccessView" hidden>
       <div class="payment-deposit-card payment-deposit-card-result" id="paymentDepositResult" hidden>
         <div class="payment-deposit-copy">
-          <span class="payment-kicker">Đặt cọc giữ lịch tư vấn</span>
+          <span class="payment-kicker">Đặt cọc test giữ lịch tư vấn</span>
           <strong id="paymentDepositAmount">1.000.000đ</strong>
           <p>Chuyển khoản đúng nội dung bên dưới để hệ thống tự xác nhận đơn cọc.</p>
         </div>
@@ -445,6 +445,17 @@
           <div><span>Số tài khoản</span><strong>4358967</strong></div>
           <div><span>Nội dung CK</span><strong id="paymentTransferContent">MQL5_Coc</strong></div>
         </div>
+      </div>
+      <div class="payment-state payment-waiting-state" id="paymentWaitingState" hidden>
+        <span class="payment-state-dot"></span>
+        <div>
+          <strong>Đang chờ SePay xác nhận giao dịch...</strong>
+          <p>Bạn cứ chuyển khoản đúng số tiền và nội dung CK. Màn hình này sẽ tự đổi khi đơn được xác nhận.</p>
+        </div>
+      </div>
+      <div class="payment-state payment-paid-state" id="paymentPaidState" hidden>
+        <strong>Thanh toán đã được xác nhận. Cảm ơn bạn!</strong>
+        <p>Mình đã nhận đơn cọc và sẽ liên hệ để chốt lịch tư vấn.</p>
       </div>
       <button type="button" class="btn btn-primary lead-form-submit" id="depositConfirmBtn">
         Xác nhận đã chuyển cọc

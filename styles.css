@@ -571,6 +571,40 @@ body {
 .lead-modal-content.is-payment-mode .form-message {
   margin-top: 12px;
 }
+.payment-state {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  color: var(--text-secondary);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.payment-state[hidden] { display: none; }
+.payment-state strong {
+  display: block;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.payment-state p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+.payment-state-dot {
+  width: 10px;
+  height: 10px;
+  margin-top: 5px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: var(--gold);
+  box-shadow: 0 0 0 6px rgba(245,158,11,0.12);
+}
+.payment-paid-state {
+  border-color: rgba(52, 211, 153, 0.36);
+  background: rgba(52, 211, 153, 0.12);
+}
 .payment-deposit-copy {
   display: grid;
   gap: 6px;
