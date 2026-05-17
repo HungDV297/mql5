@@ -27,9 +27,9 @@
   /** @type {HTMLElement} */
   const toastEl = qs('#toast');
 
-  const SUPABASE_URL = 'https://vawdkvebciokqcperbtl.supabase.co';
+  const SUPABASE_URL = 'https://rhqmzccyvfiitojeqkfr.supabase.co';
   const SUPABASE_REST_BASE = `${SUPABASE_URL}/rest/v1`;
-  const SUPABASE_ANON_KEY = 'sb_publishable_eHb1OZYE1-LaVrP1TctnJw_49jcuwoK';
+  const SUPABASE_ANON_KEY = 'sb_publishable_EGy6mohkRIoPQt1RErhrRw_jr8FaqRr';
 
   const nfVnd = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 2 });
 
