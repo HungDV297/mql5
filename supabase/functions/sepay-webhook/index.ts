@@ -1,8 +1,8 @@
 const SUPABASE_URL =
-  Deno.env.get("SUPABASE_URL") ?? "https://vawdkvebciokqcperbtl.supabase.co";
+  Deno.env.get("SUPABASE_URL") ?? "https://rhqmzccyvfiitojeqkfr.supabase.co";
 const SUPABASE_ANON_KEY =
   Deno.env.get("SUPABASE_ANON_KEY") ??
-  "sb_publishable_eHb1OZYE1-LaVrP1TctnJw_49jcuwoK";
+  "sb_publishable_EGy6mohkRIoPQt1RErhrRw_jr8FaqRr";
 const SUPABASE_REST_BASE = `${SUPABASE_URL}/rest/v1`;
 
 const jsonHeaders = {

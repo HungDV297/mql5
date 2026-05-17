@@ -25,11 +25,15 @@ const leadOptRegisterNow = document.getElementById('leadOptRegisterNow');
 const leadOptConsultation = document.getElementById('leadOptConsultation');
 const leadOptCommunity = document.getElementById('leadOptCommunity');
 const leadPhoneInput = document.getElementById('leadPhone');
+const paymentDepositResult = document.getElementById('paymentDepositResult');
+const paymentDepositAmount = document.getElementById('paymentDepositAmount');
 const paymentQrImage = document.getElementById('paymentQrImage');
 const paymentTransferContent = document.getElementById('paymentTransferContent');
 
-const PAYMENT_QR_BASE = 'https://qr.sepay.vn/img?acc=4358967&bank=ACB&amount=1000000';
+const COACHING_PRODUCT_ID = 1;
+const PAYMENT_QR_BASE = 'https://qr.sepay.vn/img?acc=4358967&bank=ACB';
 const PAYMENT_TRANSFER_PREFIX = 'MQL5_Coc';
+const nfVnd = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 0 });
 
 const leadOptionInputs = {
   register_now: leadOptRegisterNow,
@@ -47,22 +51,148 @@ function presetLeadOptions(leadType) {
   if (selectedInput) selectedInput.checked = true;
 }
 
-function buildPaymentDescription(phone) {
-  const phoneDigits = String(phone ?? '').replace(/\D/g, '');
-  return phoneDigits ? `${PAYMENT_TRANSFER_PREFIX}_${phoneDigits}` : PAYMENT_TRANSFER_PREFIX;
+function supabaseHeaders(extra = {}) {
+  return {
+    apikey: SUPABASE_PUBLISHABLE_KEY,
+    Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
+    ...extra,
+  };
 }
 
-function updatePaymentQr() {
-  const description = buildPaymentDescription(leadPhoneInput?.value);
-  if (paymentTransferContent) paymentTransferContent.textContent = description;
-  if (paymentQrImage) {
-    paymentQrImage.src = `${PAYMENT_QR_BASE}&des=${encodeURIComponent(description)}`;
+async function supabaseRequest(path, opts = {}) {
+  const res = await fetch(`${SUPABASE_REST_BASE}${path}`, {
+    method: opts.method ?? 'GET',
+    headers: supabaseHeaders({
+      ...(opts.body == null ? {} : { 'Content-Type': 'application/json' }),
+      ...(opts.prefer ? { Prefer: opts.prefer } : {}),
+    }),
+    body: opts.body == null ? undefined : JSON.stringify(opts.body),
+  });
+
+  let body = null;
+  try {
+    body = await res.json();
+  } catch {
+    body = null;
   }
+
+  if (!res.ok) {
+    const msg = String(body?.message ?? body?.hint ?? `${res.status} ${res.statusText}`);
+    throw new Error(msg || 'Không đọc được phản hồi Supabase');
+  }
+
+  return body;
+}
+
+function rowFirst(rows) {
+  return Array.isArray(rows) && rows.length > 0 ? rows[0] : null;
+}
+
+function hidePaymentResult() {
+  if (paymentDepositResult) paymentDepositResult.hidden = true;
+}
+
+function updatePaymentQr(description = PAYMENT_TRANSFER_PREFIX, amount = 1000000) {
+  const safeAmount = Math.max(0, Math.round(Number(amount) || 0));
+  if (paymentTransferContent) paymentTransferContent.textContent = description;
+  if (paymentDepositAmount) paymentDepositAmount.textContent = `${nfVnd.format(safeAmount)}đ`;
+  if (paymentQrImage) {
+    paymentQrImage.src = `${PAYMENT_QR_BASE}&amount=${safeAmount}&des=${encodeURIComponent(description)}`;
+  }
+}
+
+function showPaymentResult(description, amount) {
+  updatePaymentQr(description, amount);
+  if (paymentDepositResult) paymentDepositResult.hidden = false;
+}
+
+async function insertLead(payload) {
+  await supabaseRequest('/leads', {
+    method: 'POST',
+    prefer: 'return=minimal',
+    body: payload,
+  });
+}
+
+async function findCustomerByPhone(phone) {
+  const rows = await supabaseRequest(
+    `/customers?phone=eq.${encodeURIComponent(phone)}&select=*&limit=1`
+  );
+  return rowFirst(rows);
+}
+
+async function upsertCustomer({ name, email, phone }) {
+  const existing = await findCustomerByPhone(phone);
+  if (existing) return existing;
+
+  const rows = await supabaseRequest('/customers', {
+    method: 'POST',
+    prefer: 'return=representation',
+    body: {
+      name,
+      email,
+      phone,
+      zalo: phone,
+    },
+  });
+  return rowFirst(rows);
+}
+
+async function createCoachingOrder(customerId) {
+  const product = rowFirst(
+    await supabaseRequest(
+      `/products?id=eq.${COACHING_PRODUCT_ID}&select=*&limit=1`
+    )
+  );
+  if (!product) throw new Error('Không tìm thấy sản phẩm Coaching 1:1 MQL5 (ID 1).');
+
+  const remaining = Number(product.remaining_quantity) || 0;
+  if (remaining < 1) throw new Error('Sản phẩm Coaching 1:1 MQL5 đã hết số lượng.');
+
+  const amount = Number(product.price) || 0;
+  const inserted = rowFirst(
+    await supabaseRequest('/orders', {
+      method: 'POST',
+      prefer: 'return=representation',
+      body: {
+        customer_id: customerId,
+        product_id: COACHING_PRODUCT_ID,
+        quantity: 1,
+        amount,
+        status: 'pending',
+        payment_content: `${PAYMENT_TRANSFER_PREFIX}_TMP`,
+        purchased_at: new Date().toISOString(),
+      },
+    })
+  );
+  if (!inserted?.id) throw new Error('Không tạo được đơn hàng.');
+
+  const paymentContent = `${PAYMENT_TRANSFER_PREFIX}_${inserted.id}`;
+  const updated = rowFirst(
+    await supabaseRequest(`/orders?id=eq.${encodeURIComponent(String(inserted.id))}`, {
+      method: 'PATCH',
+      prefer: 'return=representation',
+      body: {
+        payment_content: paymentContent,
+        updated_at: new Date().toISOString(),
+      },
+    })
+  );
+
+  await supabaseRequest(`/products?id=eq.${COACHING_PRODUCT_ID}`, {
+    method: 'PATCH',
+    prefer: 'return=minimal',
+    body: { remaining_quantity: remaining - 1 },
+  });
+
+  return updated ?? { ...inserted, payment_content: paymentContent, amount };
 }
 
 function openLeadModal(leadType) {
   if (!leadModal) return;
   presetLeadOptions(leadType);
+  hidePaymentResult();
+  showMessage('');
   leadModal.classList.add('open');
   leadModal.setAttribute('aria-hidden', 'false');
   document.body.classList.add('modal-open');
@@ -101,7 +231,6 @@ closeModalTriggers.forEach((trigger) => {
 });
 
 modalCloseBtn?.addEventListener('click', closeLeadModal);
-leadPhoneInput?.addEventListener('input', updatePaymentQr);
 updatePaymentQr();
 openConsultationModalTriggers.forEach((trigger) => {
   trigger.addEventListener('click', (event) => {
@@ -136,6 +265,7 @@ function showMessage(text, type) {
 form?.addEventListener('submit', async (e) => {
   e.preventDefault();
   showMessage('');
+  hidePaymentResult();
 
   const nameInput = document.getElementById('leadName');
   const emailInput = document.getElementById('leadEmail');
@@ -169,36 +299,21 @@ form?.addEventListener('submit', async (e) => {
 
   setLoading(true);
   try {
-    const res = await fetch(`${SUPABASE_REST_BASE}/leads`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        apikey: SUPABASE_PUBLISHABLE_KEY,
-        Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
-        Prefer: 'return=minimal',
-      },
-      body: JSON.stringify(payload),
-    });
-
-    if (res.ok) {
+    if (wantRegisterNow) {
+      const customer = await upsertCustomer({ name, email, phone });
+      const order = await createCoachingOrder(customer.id);
+      showPaymentResult(order.payment_content, order.amount);
+      showMessage('Đã tạo đơn đặt cọc. Bạn chuyển khoản theo QR bên dưới để giữ lịch tư vấn.', 'success');
+      form.reset();
+      presetLeadOptions('register_now');
+    } else {
+      await insertLead(payload);
       showMessage('Đã nhận thông tin. Mình sẽ đọc case và phản hồi sớm.', 'success');
       form.reset();
-      updatePaymentQr();
       setTimeout(closeLeadModal, 1200);
-    } else {
-      let detail = '';
-      try {
-        const errBody = await res.json();
-        if (errBody?.message) detail = ` ${String(errBody.message)}`;
-        else if (errBody?.hint) detail = ` ${String(errBody.hint)}`;
-        else if (typeof errBody === 'string') detail = ` ${errBody}`;
-      } catch {
-        /* ignore */
-      }
-      showMessage(`Có lỗi xảy ra.${detail}`, 'error');
     }
-  } catch {
-    showMessage('Có lỗi xảy ra', 'error');
+  } catch (err) {
+    showMessage(`Có lỗi xảy ra. ${String(err?.message ?? err)}`, 'error');
   } finally {
     setLoading(false);
   }
