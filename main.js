@@ -32,7 +32,6 @@ const paymentDepositResult = document.getElementById('paymentDepositResult');
 const paymentDepositAmount = document.getElementById('paymentDepositAmount');
 const paymentQrImage = document.getElementById('paymentQrImage');
 const paymentTransferContent = document.getElementById('paymentTransferContent');
-const depositConfirmBtn = document.getElementById('depositConfirmBtn');
 const paymentWaitingState = document.getElementById('paymentWaitingState');
 const paymentPaidState = document.getElementById('paymentPaidState');
 
@@ -126,7 +125,6 @@ function hidePaymentResult() {
   if (paymentDepositResult) paymentDepositResult.hidden = true;
   if (paymentWaitingState) paymentWaitingState.hidden = true;
   if (paymentPaidState) paymentPaidState.hidden = true;
-  if (depositConfirmBtn) depositConfirmBtn.hidden = false;
 }
 
 function updatePaymentQr(description = PAYMENT_TRANSFER_PREFIX, amount = 1000000) {
@@ -147,7 +145,6 @@ function showPaymentResult(description, amount, orderId) {
   if (paymentDepositResult) paymentDepositResult.hidden = false;
   if (paymentWaitingState) paymentWaitingState.hidden = false;
   if (paymentPaidState) paymentPaidState.hidden = true;
-  if (depositConfirmBtn) depositConfirmBtn.hidden = false;
   startPaymentPolling(orderId);
 }
 
@@ -155,7 +152,6 @@ function showPaymentPaid() {
   stopPaymentPolling();
   if (paymentDepositResult) paymentDepositResult.hidden = true;
   if (paymentWaitingState) paymentWaitingState.hidden = true;
-  if (depositConfirmBtn) depositConfirmBtn.hidden = true;
   if (paymentPaidState) paymentPaidState.hidden = false;
   showMessage('Thanh toán đã được xác nhận. Cảm ơn bạn, mình sẽ liên hệ sớm.', 'success');
 }
@@ -321,9 +317,6 @@ closeModalTriggers.forEach((trigger) => {
 });
 
 modalCloseBtn?.addEventListener('click', closeLeadModal);
-depositConfirmBtn?.addEventListener('click', () => {
-  showMessage('Đã ghi nhận. Màn hình này sẽ tự đổi khi SePay xác nhận giao dịch.', 'success');
-});
 updatePaymentQr();
 openConsultationModalTriggers.forEach((trigger) => {
   trigger.addEventListener('click', (event) => {
