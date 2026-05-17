@@ -560,6 +560,15 @@ body {
   border-color: rgba(52, 211, 153, 0.36);
   background: linear-gradient(135deg, rgba(52, 211, 153, 0.12), rgba(0, 212, 255, 0.06));
 }
+.payment-success-view {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.payment-success-view[hidden] { display: none; }
+.lead-modal-content.is-payment-mode .form-message {
+  margin-top: 12px;
+}
 .payment-deposit-copy {
   display: grid;
   gap: 6px;

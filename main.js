@@ -14,6 +14,8 @@ const btnText = submitBtn?.querySelector('.btn-text');
 const btnLoading = submitBtn?.querySelector('.btn-loading');
 const messageEl = document.getElementById('leadFormMessage');
 const leadModal = document.getElementById('leadModal');
+const leadModalContent = document.getElementById('leadModalContent');
+const leadFormIntro = document.getElementById('leadFormIntro');
 const modalCloseBtn = document.getElementById('leadModalCloseBtn');
 const openModalTriggers = document.querySelectorAll('[data-open-lead-form]');
 const closeModalTriggers = document.querySelectorAll('[data-close-lead-form]');
@@ -25,10 +27,12 @@ const leadOptRegisterNow = document.getElementById('leadOptRegisterNow');
 const leadOptConsultation = document.getElementById('leadOptConsultation');
 const leadOptCommunity = document.getElementById('leadOptCommunity');
 const leadPhoneInput = document.getElementById('leadPhone');
+const paymentSuccessView = document.getElementById('paymentSuccessView');
 const paymentDepositResult = document.getElementById('paymentDepositResult');
 const paymentDepositAmount = document.getElementById('paymentDepositAmount');
 const paymentQrImage = document.getElementById('paymentQrImage');
 const paymentTransferContent = document.getElementById('paymentTransferContent');
+const depositConfirmBtn = document.getElementById('depositConfirmBtn');
 
 const COACHING_PRODUCT_ID = 1;
 const PAYMENT_QR_BASE = 'https://qr.sepay.vn/img?acc=4358967&bank=ACB';
@@ -89,6 +93,10 @@ function rowFirst(rows) {
 }
 
 function hidePaymentResult() {
+  if (leadModalContent) leadModalContent.classList.remove('is-payment-mode');
+  if (leadFormIntro) leadFormIntro.hidden = false;
+  if (form) form.hidden = false;
+  if (paymentSuccessView) paymentSuccessView.hidden = true;
   if (paymentDepositResult) paymentDepositResult.hidden = true;
 }
 
@@ -103,6 +111,10 @@ function updatePaymentQr(description = PAYMENT_TRANSFER_PREFIX, amount = 1000000
 
 function showPaymentResult(description, amount) {
   updatePaymentQr(description, amount);
+  if (leadModalContent) leadModalContent.classList.add('is-payment-mode');
+  if (leadFormIntro) leadFormIntro.hidden = true;
+  if (form) form.hidden = true;
+  if (paymentSuccessView) paymentSuccessView.hidden = false;
   if (paymentDepositResult) paymentDepositResult.hidden = false;
 }
 
@@ -231,6 +243,10 @@ closeModalTriggers.forEach((trigger) => {
 });
 
 modalCloseBtn?.addEventListener('click', closeLeadModal);
+depositConfirmBtn?.addEventListener('click', () => {
+  showMessage('Đã ghi nhận. Hệ thống sẽ tự cập nhật đơn khi SePay xác nhận giao dịch.', 'success');
+  setTimeout(closeLeadModal, 900);
+});
 updatePaymentQr();
 openConsultationModalTriggers.forEach((trigger) => {
   trigger.addEventListener('click', (event) => {

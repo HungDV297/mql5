@@ -391,9 +391,9 @@
 <!-- LEAD FORM MODAL -->
 <div class="lead-modal" id="leadModal" aria-hidden="true">
   <div class="lead-modal-overlay" data-close-lead-form></div>
-  <div class="lead-modal-content card" role="dialog" aria-modal="true" aria-labelledby="leadModalTitle">
+  <div class="lead-modal-content card" id="leadModalContent" role="dialog" aria-modal="true" aria-labelledby="leadModalTitle">
     <button class="lead-modal-close" id="leadModalCloseBtn" type="button" aria-label="Đóng form">×</button>
-    <div class="lead-form-intro">
+    <div class="lead-form-intro" id="leadFormIntro">
       <span class="section-label" style="margin-bottom:8px;">Đăng ký tư vấn 1:1</span>
     </div>
     <form class="lead-form" id="leadCaptureForm" novalidate>
@@ -413,18 +413,24 @@
         <legend class="form-label">Bạn cần tư vấn về nội dung nào? <span class="req">*</span></legend>
         <label class="option-item" for="leadOptRegisterNow">
           <input type="checkbox" id="leadOptRegisterNow" name="want_register_now">
-          <span>Coaching 1:1 MQL5</span>
+          <span>Coaching 1:1 MQL5(cọc 1tr)</span>
         </label>
         <label class="option-item" for="leadOptConsultation">
           <input type="checkbox" id="leadOptConsultation" name="want_consultation">
           <span>Tư vấn xây bot theo chiến lược riêng</span>
         </label>
       </fieldset>
+      <button type="submit" class="btn btn-primary lead-form-submit" id="leadSubmitBtn">
+        <span class="btn-text">Gửi thông tin tư vấn</span>
+        <span class="btn-loading" hidden>Đang gửi...</span>
+      </button>
+    </form>
+    <div class="payment-success-view" id="paymentSuccessView" hidden>
       <div class="payment-deposit-card payment-deposit-card-result" id="paymentDepositResult" hidden>
         <div class="payment-deposit-copy">
           <span class="payment-kicker">Đặt cọc giữ lịch tư vấn</span>
           <strong id="paymentDepositAmount">1.000.000đ</strong>
-          <p>Nếu hai bên không đạt thỏa thuận sau buổi tư vấn, mình hoàn lại tiền cọc.</p>
+          <p>Chuyển khoản đúng nội dung bên dưới để hệ thống tự xác nhận đơn cọc.</p>
         </div>
         <div class="payment-qr-wrap">
           <img
@@ -440,11 +446,10 @@
           <div><span>Nội dung CK</span><strong id="paymentTransferContent">MQL5_Coc</strong></div>
         </div>
       </div>
-      <button type="submit" class="btn btn-primary lead-form-submit" id="leadSubmitBtn">
-        <span class="btn-text">Gửi thông tin tư vấn</span>
-        <span class="btn-loading" hidden>Đang gửi...</span>
+      <button type="button" class="btn btn-primary lead-form-submit" id="depositConfirmBtn">
+        Xác nhận đã chuyển cọc
       </button>
-    </form>
+    </div>
     <div class="form-message" id="leadFormMessage" role="status" aria-live="polite" aria-atomic="true"></div>
   </div>
 </div>
