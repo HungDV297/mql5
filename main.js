@@ -4,9 +4,9 @@
  * name, email, phone,
  * want_register_now, want_consultation, want_join_community.
  */
-const SUPABASE_REST_BASE = 'https://vawdkvebciokqcperbtl.supabase.co/rest/v1';
+const SUPABASE_REST_BASE = 'https://rhqmzccyvfiitojeqkfr.supabase.co/rest/v1/';
 const SUPABASE_PUBLISHABLE_KEY =
-  'sb_publishable_eHb1OZYE1-LaVrP1TctnJw_49jcuwoK';
+  'sb_publishable_EGy6mohkRIoPQt1RErhrRw_jr8FaqRr';
 
 const form = document.getElementById('leadCaptureForm');
 const submitBtn = document.getElementById('leadSubmitBtn');
