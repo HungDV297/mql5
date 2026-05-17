@@ -31,7 +31,7 @@ create table if not exists orders (
   amount numeric not null default 0,
   status text not null default 'pending'
     check (status in ('pending', 'success', 'cancelled')),
-  payment_content text not null default 'MQL5_Coc',
+  payment_content text not null default 'MQL5Coc',
   purchased_at timestamptz not null default now(),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()

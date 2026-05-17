@@ -38,7 +38,7 @@ const paymentPaidState = document.getElementById('paymentPaidState');
 
 const COACHING_PRODUCT_ID = 2;
 const PAYMENT_QR_BASE = 'https://qr.sepay.vn/img?acc=4358967&bank=ACB';
-const PAYMENT_TRANSFER_PREFIX = 'MQL5_Coc';
+const PAYMENT_TRANSFER_PREFIX = 'MQL5Coc';
 const PAYMENT_POLL_INTERVAL_MS = 4000;
 const PAYMENT_POLL_TIMEOUT_MS = 15 * 60 * 1000;
 const nfVnd = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 0 });
@@ -216,14 +216,14 @@ async function createCoachingOrder(customerId) {
         quantity: 1,
         amount,
         status: 'pending',
-        payment_content: `${PAYMENT_TRANSFER_PREFIX}_TMP`,
+        payment_content: `${PAYMENT_TRANSFER_PREFIX}TMP`,
         purchased_at: new Date().toISOString(),
       },
     })
   );
   if (!inserted?.id) throw new Error('Không tạo được đơn hàng.');
 
-  const paymentContent = `${PAYMENT_TRANSFER_PREFIX}_${inserted.id}`;
+  const paymentContent = `${PAYMENT_TRANSFER_PREFIX}${inserted.id}`;
   const updated = rowFirst(
     await supabaseRequest(`/orders?id=eq.${encodeURIComponent(String(inserted.id))}`, {
       method: 'PATCH',

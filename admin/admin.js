@@ -227,7 +227,7 @@
           throw new Error(`Không đủ hàng trong kho (còn ${remaining}, yêu cầu ${quantity})`);
         }
 
-        const paymentContent = String(payload.transfer_memo ?? '').trim() || 'MQL5_Coc';
+        const paymentContent = String(payload.transfer_memo ?? '').trim() || 'MQL5Coc';
         const purchaseDate = String(payload.purchase_date ?? '').slice(0, 10) || isoLocalToday();
         const status = String(payload.status ?? '').trim() || 'pending';
         const amount = (Number(product.price) || 0) * quantity;
@@ -258,7 +258,7 @@
       if (method === 'PUT' && id) {
         const body = {
           status: String(payload.status ?? '').trim(),
-          payment_content: String(payload.transfer_memo ?? '').trim() || 'MQL5_Coc',
+          payment_content: String(payload.transfer_memo ?? '').trim() || 'MQL5Coc',
           purchased_at: `${String(payload.purchase_date ?? '').slice(0, 10) || isoLocalToday()} 00:00:00`,
           updated_at: new Date().toISOString(),
         };
@@ -638,8 +638,8 @@
       </div>
       <div class="field">
         <label for="f_transfer_memo">Nội dung chuyển khoản</label>
-        <input id="f_transfer_memo" name="transfer_memo" maxlength="240" value="MQL5_Coc" />
-        <div class="form-footnote" style="margin-top: 4px">Ví dụ cho cọc: <strong>MQL5_Coc</strong> (+ số điện thoại nếu cần).</div>
+        <input id="f_transfer_memo" name="transfer_memo" maxlength="240" value="MQL5Coc" />
+        <div class="form-footnote" style="margin-top: 4px">Ví dụ cho cọc: <strong>MQL5Coc</strong> (+ mã đơn nếu cần).</div>
       </div>
       <div class="field">
         <label for="f_purchase_date">Ngày mua</label>
@@ -673,7 +673,7 @@
       <div class="form-footnote" style="margin-top:0">${escapeHtml(line)}</div>
       <div class="field">
         <label for="f_transfer_edit">Nội dung chuyển khoản</label>
-        <input id="f_transfer_edit" name="transfer_memo" maxlength="240" value="${escapeHtml(String(payload.transfer_memo ?? 'MQL5_Coc'))}" />
+        <input id="f_transfer_edit" name="transfer_memo" maxlength="240" value="${escapeHtml(String(payload.transfer_memo ?? 'MQL5Coc'))}" />
       </div>
       <div class="field">
         <label for="f_purchase_edit">Ngày mua</label>
