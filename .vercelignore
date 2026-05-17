@@ -1,0 +1,14 @@
+node_modules/
+.env
+package.json
+__pycache__/
+*.pyc
+*.log
+*.pid
+*.jobid
+brain.db
+brain_backup*.db
+mql5.zip
+server.js
+server.node.backup.js
+serve_crm.py

@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coach 1:1 Lập Trình Bot MQL5 – HungAAI</title>
+<meta name="description" content="Coaching 1:1 giúp trader biến chiến lược thành rule, code MQL5, backtest, risk control và quy trình vận hành. Không hứa lợi nhuận, chỉ xây hệ thống rõ hơn.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+<div class="container nav-inner">
+  <a href="#" class="nav-logo">Hung<span>AAI</span></a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#problems">Vấn đề</a></li>
+    <li><a href="#solution">Cơ chế</a></li>
+    <li><a href="#outcomes">Kết quả</a></li>
+    <li><a href="#roadmap">Lộ trình</a></li>
+    <li><a href="#who">Ai phù hợp</a></li>
+    <li><a href="#instructor">Liên hệ</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+  <div class="nav-cta"><a href="#" class="btn btn-primary" data-open-lead-form data-lead-type="consultation">Đăng ký tư vấn</a></div>
+  <button class="nav-toggle" id="navToggle" aria-label="Menu">☰</button>
+</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+<div class="container hero-grid">
+  <div>
+    <div class="hero-badge"><span class="dot"></span> Coaching 1:1 MQL5 Bot Trading</div>
+    <h1>Bot Không Cứu Một Hệ Thống Mơ Hồ.<br><span class="text-gradient">Nó Chỉ Phóng Đại Rule Của Bạn.</span></h1>
+    <p>Nếu bạn đang trade bằng cảm giác, backtest đẹp nhưng live lại vỡ, hoặc dùng AI để code mà không biết kiểm chứng, coaching 1:1 này giúp bạn đưa chiến lược về rule, risk, code MQL5 và quy trình vận hành rõ ràng hơn.</p>
+    <div class="hero-actions">
+      <a href="#" class="btn btn-primary" data-open-lead-form data-lead-type="consultation">📋 Đăng ký tư vấn</a>
+      <a href="#roadmap" class="btn btn-secondary">🔎 Xem lộ trình coaching</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-card"><div class="num">17+</div><div class="label">Năm lập trình</div></div>
+      <div class="stat-card"><div class="num">8+</div><div class="label">Năm làm EA</div></div>
+      <div class="stat-card"><div class="num">350+</div><div class="label">Học viên từng học</div></div>
+    </div>
+  </div>
+  <div class="hero-visual fade-up">
+    <div class="code-header"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+    <pre class="code-block"><span class="comment">// MQL5 Coach 1:1 - rule first</span>
+<span class="keyword">int</span> <span class="func">OnInit</span>() {
+   riskPerTrade = <span class="number">0.01</span>;
+   maxDailyLoss = <span class="number">0.03</span>;
+   <span class="keyword">return</span>(INIT_SUCCEEDED);
+}
+<span class="keyword">void</span> <span class="func">OnTick</span>() {
+   <span class="keyword">if</span>(!<span class="func">RiskAllowed</span>() || !<span class="func">RuleIsClear</span>())
+      <span class="keyword">return</span>;
+
+   <span class="keyword">if</span>(<span class="func">EntryChecklistPassed</span>())
+      <span class="func">ExecuteWithRisk</span>();
+}
+
+<span class="keyword">bool</span> <span class="func">RiskAllowed</span>() {
+   <span class="keyword">if</span>(<span class="func">DailyLossExceeded</span>())
+      <span class="keyword">return</span>(<span class="keyword">false</span>);
+
+   <span class="keyword">if</span>(<span class="func">TooManyPositions</span>())
+      <span class="keyword">return</span>(<span class="keyword">false</span>);
+   <span class="keyword">return</span>(<span class="keyword">true</span>);
+}
+<span class="keyword">void</span> <span class="func">ExecuteWithRisk</span>() {
+   lotSize = <span class="func">CalculateLotByRisk</span>(riskPerTrade);
+   stopLoss = <span class="func">BuildStopLossFromRule</span>();
+   takeProfit = <span class="func">BuildTakeProfitFromRule</span>();
+
+   <span class="func">SendOrder</span>(lotSize, stopLoss, takeProfit);
+}</pre>
+  </div>
+</div>
+</section>
+
+<!-- PROBLEMS -->
+<section class="section problems" id="problems">
+<div class="container">
+  <span class="section-label">Pain thật</span>
+  <h2 class="section-title">Bạn Không Thiếu Tool.<br><span class="text-gradient">Bạn Thiếu Một Hệ Thống Đủ Rõ Để Không Tự Phá.</span></h2>
+  <p class="section-subtitle">Nhiều trader đổi indicator, đổi EA, đổi prompt AI liên tục. Nhưng cái lõi vẫn mơ hồ: rule không chặt, risk không có phanh, log không đủ sạch để kiểm chứng.</p>
+  <div class="problems-grid">
+    <div class="card problem-card fade-up"><span class="icon">01</span><h3>Rule vào lệnh còn mềm</h3><p>Trên chart nhìn có vẻ đủ điều kiện. Nhưng khi viết thành code, mọi chữ “tùy”, “có thể”, “nhìn bối cảnh” bắt đầu lộ ra.</p></div>
+    <div class="card problem-card fade-up"><span class="icon">02</span><h3>Backtest đẹp nhưng dễ tin quá sớm</h3><p>Equity đi lên không chứng minh hệ thống sống được khi spread giãn, VPS lag, slippage và cảm xúc can thiệp.</p></div>
+    <div class="card problem-card fade-up"><span class="icon">03</span><h3>Không có risk engine</h3><p>Entry có thể sửa sau. Nhưng một EA không giới hạn lot, daily loss, max drawdown thì chỉ cần một ngày xấu là đủ đau.</p></div>
+    <div class="card problem-card fade-up"><span class="icon">04</span><h3>Copy code nhưng không hiểu hệ</h3><p>Bot chạy được không có nghĩa là bạn vận hành được. Khi lỗi xuất hiện, bạn không biết sửa rule, sửa code hay dừng hệ thống.</p></div>
+    <div class="card problem-card fade-up"><span class="icon">05</span><h3>AI làm nhanh hơn, nhưng cũng rối nhanh hơn</h3><p>Prompt tốt có thể sinh code. Nhưng nếu yêu cầu mơ hồ, AI chỉ giúp tự động hóa sự mơ hồ với tốc độ cao hơn.</p></div>
+    <div class="card problem-card fade-up"><span class="icon">06</span><h3>Không biết mình kẹt ở đâu</h3><p>Code, logic, risk, dữ liệu hay kỷ luật vận hành? Nếu không soi đúng điểm nghẽn, bạn sẽ tiếp tục học lan man.</p></div>
+  </div>
+</div>
+</section>
+
+<!-- SOLUTION -->
+<section class="section" id="solution">
+<div class="container">
+  <span class="section-label">Mechanism</span>
+  <h2 class="section-title">Coaching 1:1 Không Bắt Đầu Bằng Code.<br><span class="text-gradient">Nó Bắt Đầu Bằng Rule.</span></h2>
+  <p class="section-subtitle">Mục tiêu không phải viết một con bot nghe cho oai. Mục tiêu là biến chiến lược của bạn thành một hệ thống có thể mô tả, code, backtest, forward test và vận hành có trách nhiệm.</p>
+  <div class="solution-grid">
+    <div class="card solution-card fade-up"><span class="icon">R</span><h3>Rule</h3><p>Viết lại điều kiện vào/thoát lệnh, điều kiện không trade, cách xử lý ngoại lệ thành checklist đo được.</p></div>
+    <div class="card solution-card fade-up"><span class="icon">C</span><h3>Code</h3><p>Chuyển checklist thành MQL5: EA, indicator, script, order management và các module cần thiết.</p></div>
+    <div class="card solution-card fade-up"><span class="icon">T</span><h3>Test</h3><p>Backtest đúng cách, soi overfitting, đọc report, tính spread/slippage/commission và không tin equity quá sớm.</p></div>
+    <div class="card solution-card fade-up"><span class="icon">K</span><h3>Risk</h3><p>Đưa risk/lệnh, daily loss, max drawdown, điều kiện dừng và điều kiện không chạy vào chính hệ thống.</p></div>
+    <div class="card solution-card fade-up"><span class="icon">A</span><h3>AI</h3><p>Dùng AI như đòn bẩy viết code, debug, refactor và kiểm tra logic. Không dùng AI để che phần rule còn mù.</p></div>
+    <div class="card solution-card fade-up"><span class="icon">O</span><h3>Operate</h3><p>Vận hành trên demo/forward/VPS, ghi log, review định kỳ và biết khi nào nên tắt bot để soi lại hệ thống.</p></div>
+  </div>
+</div>
+</section>
+
+<!-- OUTCOMES -->
+<section class="section outcomes" id="outcomes">
+<div class="container">
+  <span class="section-label">Sau coaching</span>
+  <h2 class="section-title">Bạn Không Chỉ Có Một File EA.<br><span class="text-gradient">Bạn Có Một Khung Để Tự Soi Hệ Thống.</span></h2>
+  <div class="outcomes-grid">
+    <div class="card outcome-card fade-up"><h3>Tự viết hoặc đọc được bot của mình</h3><p>Không còn phụ thuộc hoàn toàn vào code copy. Bạn hiểu bot đang vào lệnh vì rule nào và dừng vì điều kiện nào.</p></div>
+    <div class="card outcome-card fade-up"><h3>Biết kiểm chứng trước khi tin</h3><p>Backtest, forward test, log, sample dữ liệu và overfitting được nhìn như một quy trình, không phải một báo cáo để tự trấn an.</p></div>
+    <div class="card outcome-card fade-up"><h3>Có framework phát triển EA</h3><p>Các module entry, exit, order, risk, alert, Telegram hoặc vận hành đa khung được tách rõ để bạn còn nâng cấp sau này.</p></div>
+    <div class="card outcome-card fade-up"><h3>Biết dùng AI đúng chỗ</h3><p>AI hỗ trợ sinh code và debug nhanh hơn, nhưng quyết định vẫn quay về rule, dữ liệu, risk và trách nhiệm của trader.</p></div>
+  </div>
+</div>
+</section>
+
+<!-- ROADMAP -->
+<section class="section roadmap" id="roadmap">
+<div class="container">
+  <span class="section-label">Lộ trình cá nhân hóa</span>
+  <h2 class="section-title">Không Nhồi Một Giáo Trình Cho Tất Cả.<br><span class="text-gradient">Soi Case Trước, Chọn Module Sau.</span></h2>
+  <p class="section-subtitle">Các module dưới đây lấy từ kinh nghiệm đào tạo MQL4/MQL5 và làm EA thực tế. Bạn không nhất thiết học tất cả theo một thứ tự cứng. Buổi tư vấn sẽ xác định bạn đang nghẽn ở đâu.</p>
+  <div class="roadmap-timeline">
+    <div class="roadmap-item fade-up">
+      <div class="roadmap-marker">01</div>
+      <div class="roadmap-content card">
+        <div class="level-tag">Module 1 - Foundation</div>
+        <h3>Lập trình cơ bản và tư duy rule</h3>
+        <p>Kiểu dữ liệu, biến/hằng, phép toán, điều kiện, vòng lặp, hàm và cách biến một setup mơ hồ thành checklist đủ rõ để code.</p>
+        <div class="roadmap-tags"><span>MQL5 basics</span><span>Checklist</span><span>Rule definition</span></div>
+      </div>
+    </div>
+    <div class="roadmap-item fade-up">
+      <div class="roadmap-marker">02</div>
+      <div class="roadmap-content card">
+        <div class="level-tag">Module 2 - EA thực chiến</div>
+        <h3>Viết EA từ mô hình vào/thoát lệnh</h3>
+        <p>Hàm kiểm tra mô hình nến, vào lệnh, thoát lệnh, chỉnh sửa lệnh, trailing stop, bảo vệ lệnh, đa khung và đa cặp.</p>
+        <div class="roadmap-tags"><span>Expert Advisor</span><span>Order functions</span><span>Trailing stop</span></div>
+      </div>
+    </div>
+    <div class="roadmap-item fade-up">
+      <div class="roadmap-marker">03</div>
+      <div class="roadmap-content card">
+        <div class="level-tag">Module 3 - Backtest</div>
+        <h3>Backtest đúng chuẩn, không trang điểm quá khứ</h3>
+        <p>Backtest dữ liệu chất lượng, đọc report, tìm tham số tối ưu, soi overfitting và chuẩn bị forward test có log rõ.</p>
+        <div class="roadmap-tags"><span>Backtest</span><span>Optimization</span><span>Forward test</span></div>
+      </div>
+    </div>
+    <div class="roadmap-item fade-up">
+      <div class="roadmap-marker">04</div>
+      <div class="roadmap-content card">
+        <div class="level-tag">Module 4 - Indicator, script, object</div>
+        <h3>Robot dùng indicator và tương tác chart</h3>
+        <p>MA, MACD, RSI, custom indicator, Heiken Ashi, TMA/Fibo, script CloseAll/DeleteAllObject/ShowHistory và bot tương tác trendline.</p>
+        <div class="roadmap-tags"><span>Indicator</span><span>Script</span><span>Object</span></div>
+      </div>
+    </div>
+    <div class="roadmap-item fade-up">
+      <div class="roadmap-marker">05</div>
+      <div class="roadmap-content card">
+        <div class="level-tag">Module 5 - Risk và vận hành</div>
+        <h3>Martingale, hedge và giới hạn rủi ro</h3>
+        <p>Hiểu martingale/hedge đủ tỉnh táo, biết cách tính lot/khoảng cách/khử dây, và quan trọng hơn: biết khi nào hệ thống phải dừng.</p>
+        <div class="roadmap-tags"><span>Risk engine</span><span>Hedge</span><span>Drawdown control</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- WHO IS THIS FOR -->
+<section class="section" id="who">
+<div class="container">
+  <span class="section-label">Dành cho ai</span>
+  <h2 class="section-title">Không Dành Cho Người Tìm Bot Thần Thánh.<br><span class="text-gradient">Dành Cho Người Muốn Tự Xây Hệ Thống.</span></h2>
+  <div class="who-grid">
+    <div class="card who-card fade-up">
+      <span class="persona">🌱</span>
+      <h3>Trader có chiến lược nhưng chưa biết code</h3>
+      <ul>
+        <li>Có cách vào lệnh thủ công nhưng chưa mô tả thành rule rõ</li>
+        <li>Muốn học MQL5 từ nền tảng để tự kiểm soát hệ thống</li>
+        <li>Cần người soi case thật, không cần thêm video lan man</li>
+      </ul>
+      <div class="outcome">Kết quả mong muốn: biến chiến lược thành checklist và EA đầu tiên có risk rõ.</div>
+    </div>
+    <div class="card who-card fade-up">
+      <span class="persona">⚡</span>
+      <h3>Người đã có EA nhưng chưa tin hệ thống</h3>
+      <ul>
+        <li>Backtest nhìn ổn nhưng chưa biết có overfit không</li>
+        <li>EA chạy lỗi, khó debug, khó nâng cấp</li>
+        <li>Risk engine còn thiếu hoặc đang xử lý cảm tính</li>
+      </ul>
+      <div class="outcome">Kết quả mong muốn: hệ thống có log, kiểm chứng và giới hạn rủi ro rõ hơn.</div>
+    </div>
+    <div class="card who-card fade-up">
+      <span class="persona">🎯</span>
+      <h3>Trader part-time muốn bớt làm thủ công</h3>
+      <ul>
+        <li>Không thể ngồi chart cả ngày nhưng vẫn muốn giữ kỷ luật</li>
+        <li>Muốn dùng bot/AI để giảm thao tác lặp lại</li>
+        <li>Chấp nhận kiểm chứng thay vì tìm đường tắt</li>
+      </ul>
+      <div class="outcome">Kết quả mong muốn: có workflow vận hành, review và cải tiến đều đặn.</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- INSTRUCTOR -->
+<section class="section instructor" id="instructor">
+<div class="container">
+  <span class="section-label">Proof / Credibility</span>
+  <h2 class="section-title">Người Đứng Sau - <span class="text-gradient">HungAAI</span></h2>
+  <div class="instructor-grid">
+    <div class="instructor-photo fade-up">
+      <img src="assets/hero.png" alt="Đinh Văn Hùng - HungAAI">
+    </div>
+    <div class="instructor-info fade-up">
+      <h3>Đinh Văn Hùng</h3>
+      <div class="tagline">System Builder × AI & Automation Builder × Người làm MQL4/MQL5 thực chiến</div>
+      <p>17 năm kinh nghiệm lập trình, 8 năm lập trình EA, 4 năm đào tạo lập trình EA. Đã thực hiện nhiều bot và hệ thống giao dịch cho cá nhân, đội nhóm và tổ chức.</p>
+      <p>Quan điểm làm việc rất rõ: bot không phải phép màu. Bot chỉ thực thi đúng phần rule bạn định nghĩa. Nếu rule mơ hồ, risk lỏng và vận hành cảm tính, automation chỉ làm vấn đề chạy nhanh hơn.</p>
+      <div class="instructor-contact">
+        <div><strong>SĐT/Zalo/Telegram:</strong> 0868 808 183</div>
+        <div><strong>Facebook:</strong> www.fb.com/hungdv297</div>
+        <div><strong>Email:</strong> dvhung297@yahoo.com - ndbd79@gmail.com</div>
+      </div>
+    </div>
+  </div>
+  <div class="instructor-detail-grid">
+    <div class="card instructor-detail-card fade-up">
+      <div class="detail-icon">🎓</div>
+      <h3>Kinh Nghiệm</h3>
+      <ul>
+        <li>Kinh nghiệm lập trình 17 năm</li>
+        <li>8 năm lập trình EA</li>
+        <li>4 năm đào tạo lập trình EA</li>
+        <li>Đã thực hiện nhiều bot và hệ thống giao dịch cho cá nhân, đội nhóm và tổ chức</li>
+        <li>Tổ chức nhiều buổi chuyên đề về lập trình EA, chia sẻ kiến thức thực chiến</li>
+      </ul>
+    </div>
+    <div class="card instructor-detail-card fade-up">
+      <div class="detail-icon">👨‍🎓</div>
+      <h3>Bằng Cấp</h3>
+      <ul>
+        <li>Tốt nghiệp chuyên ngành Tin học loại giỏi trường ĐH Cần Thơ</li>
+        <li>Software Project Management - cấp bởi Alliant Corp</li>
+        <li>Hướng dẫn ứng dụng và áp dụng Hệ thống thẻ cân bằng điểm BSC</li>
+        <li>Giám Đốc Điều Hành - cấp bởi Viện trưởng Viện Quản trị doanh nghiệp</li>
+      </ul>
+    </div>
+    <div class="card instructor-detail-card fade-up">
+      <div class="detail-icon">🏢</div>
+      <h3>Đơn Vị Từng Công Tác</h3>
+      <ul>
+        <li>Giảng viên tại Viện đào tạo Bách Khoa</li>
+        <li>Giảng viên môn lập trình Auto Trade Forex - Trung Tâm Đào Tạo Tin Học Khoa Phạm</li>
+        <li>Phó GĐ Phụ Trách CNTT - Công Ty TNHH Thương Mại Dịch Vụ Địa Ốc Hoàng Phúc Đạt</li>
+        <li>PGĐ KD Khu Vực miền Đông - Cty NewSaigonSoft</li>
+      </ul>
+    </div>
+  </div>
+  <div class="trust-grid">
+    <div class="card trust-card fade-up"><div class="num">06</div><div>Năm phát triển hệ sinh thái</div></div>
+    <div class="card trust-card fade-up"><div class="num">350+</div><div>Học viên tốt nghiệp</div></div>
+    <div class="card trust-card fade-up"><div class="num">90%</div><div>Hài lòng chất lượng</div></div>
+    <div class="card trust-card fade-up"><div class="num">70%</div><div>Học được, làm được</div></div>
+  </div>
+</div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section" id="testimonials">
+<div class="container">
+  <span class="section-label">Phản hồi</span>
+  <h2 class="section-title">Người Học Cũ <span class="text-gradient">Nói Gì?</span></h2>
+  <div class="testimonials-grid">
+    <div class="card testimonial-card fade-up">
+      <div class="stars">★★★★★</div>
+      <blockquote>"Phần học này đã giúp tôi hiểu rõ về bot và tự tay xây dựng được một hệ thống giao dịch theo phong cách của riêng mình."</blockquote>
+      <div class="author"><div class="avatar"><img src="assets/testimonial-long.png" alt="Mr.Long"></div><div><div class="name">Mr.Long</div><div class="role">Trader full-time</div></div></div>
+    </div>
+    <div class="card testimonial-card fade-up">
+      <div class="stars">★★★★★</div>
+      <blockquote>"Tôi được cung cấp kiến thức về bot từ cơ bản đến nâng cao. Giảng viên tận tâm và hỗ trợ nhiệt tình, giúp tôi ứng dụng được nhiều vào hệ thống giao dịch."</blockquote>
+      <div class="author"><div class="avatar"><img src="assets/testimonial-khac-anh.png" alt="Mr.Khắc Anh"></div><div><div class="name">Mr.Khắc Anh</div><div class="role">Chuyên gia trade bot</div></div></div>
+    </div>
+    <div class="card testimonial-card fade-up">
+      <div class="stars">★★★★★</div>
+      <blockquote>"Tôi hiểu hơn về bot, cách vận hành bot và áp dụng cho khách hàng. Giá trị lớn nhất là biết nhìn bot như một hệ thống, không chỉ là công cụ vào lệnh."</blockquote>
+      <div class="author"><div class="avatar"><img src="assets/testimonial-phuoc.png" alt="Mr.Phước"></div><div><div class="name">Mr.Phước</div><div class="role">IB pro</div></div></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- OFFER -->
+<section class="section community offer" id="offer">
+<div class="container">
+  <span class="section-label">Waitlist / Tư vấn 1:1</span>
+  <h2 class="section-title">Nếu Bạn Muốn Mình Soi Case,<br><span class="text-gradient">Hãy Điền Form Danh Sách Chờ.</span></h2>
+  <p class="section-subtitle" style="margin:0 auto 0;">Không có cam kết lợi nhuận. Không có bot tự in tiền. Chỉ có một buổi tư vấn để nhìn thẳng vào rule, risk, log, code hiện tại và xem có nên đi tiếp coaching 1:1 hay không.</p>
+  <div class="offer-card card fade-up">
+    <div>
+      <h3>Trong form, hãy ghi case thật càng rõ càng tốt.</h3>
+      <p>Chiến lược bạn đang trade, phần bạn đang kẹt, EA/backtest/log nếu có, và mục tiêu bạn muốn xây trong 1-3 tháng tới.</p>
+    </div>
+    <a href="#" class="btn btn-primary" data-open-lead-form data-lead-type="consultation">Đăng ký tư vấn</a>
+  </div>
+  <div class="community-features">
+    <div class="card community-feature fade-up"><span class="icon">01</span><h3>Coaching 1:1 MQL5</h3><p>Đi theo case của bạn, không nhồi một giáo trình đại trà cho mọi người.</p></div>
+    <div class="card community-feature fade-up"><span class="icon">02</span><h3>Review rule/code/backtest</h3><p>Soi điểm nghẽn thật: logic, risk, dữ liệu, code hay vận hành.</p></div>
+    <div class="card community-feature fade-up"><span class="icon">03</span><h3>AI-assisted workflow</h3><p>Dùng AI để tăng tốc nhưng vẫn giữ trách nhiệm ở người trader.</p></div>
+    <div class="card community-feature fade-up"><span class="icon">04</span><h3>Cộng đồng và cập nhật</h3><p>Chia sẻ template, kinh nghiệm vận hành, prompt và cách kiểm chứng hệ thống.</p></div>
+  </div>
+</div>
+</section>
+
+<!-- FAQ -->
+<section class="section" id="faq">
+<div class="container">
+  <span class="section-label">Câu hỏi thường gặp</span>
+  <h2 class="section-title">FAQ</h2>
+  <div class="faq-list">
+    <div class="faq-item"><button class="faq-question">Không biết code có vào coaching 1:1 được không?</button><div class="faq-answer"><p>Được, nếu bạn sẵn sàng học từ rule trước. MQL5 có thể học từng bước. Nhưng nếu chiến lược còn mơ hồ, việc đầu tiên không phải code, mà là viết lại điều kiện vào/thoát lệnh cho đủ rõ.</p></div></div>
+    <div class="faq-item"><button class="faq-question">Tôi đã có EA rồi, có cần học lại từ đầu không?</button><div class="faq-answer"><p>Không nhất thiết. Mình sẽ đọc case để xem bạn kẹt ở đâu: code lỗi, backtest chưa sạch, risk engine thiếu, hay quy trình vận hành chưa rõ. Coaching 1:1 sẽ chọn module theo điểm nghẽn đó.</p></div></div>
+    <div class="faq-item"><button class="faq-question">Có cam kết bot sẽ có lợi nhuận không?</button><div class="faq-answer"><p>Không. Trading có rủi ro. Bot, MQL5 và AI chỉ giúp bạn thực thi rule rõ hơn, kiểm chứng tốt hơn và giảm cảm xúc can thiệp. Kết quả vẫn phụ thuộc vào chiến lược, dữ liệu, risk và kỷ luật vận hành của bạn.</p></div></div>
+    <div class="faq-item"><button class="faq-question">Có dùng AI để code không?</button><div class="faq-answer"><p>Có. Nhưng AI không thay bạn chịu trách nhiệm. AI được dùng để tăng tốc viết code, debug, refactor và kiểm tra logic. Rule, risk và quyết định vận hành vẫn phải do người trader hiểu rõ.</p></div></div>
+    <div class="faq-item"><button class="faq-question">Coaching này khác lớp đại trà trước đây ở điểm nào?</button><div class="faq-answer"><p>Lớp đại trà đi theo giáo trình chung. Coaching 1:1 bắt đầu từ case của bạn: trình độ code, chiến lược đang dùng, EA/backtest nếu có, và mục tiêu đầu ra. Form là để tư vấn và chốt lộ trình sau, không phải đăng ký mua ngay.</p></div></div>
+    <div class="faq-item"><button class="faq-question">Tôi nên chuẩn bị gì trước khi điền form?</button><div class="faq-answer"><p>Ghi càng thật càng tốt: bạn trade thị trường nào, đang dùng rule gì, có backtest/log/EA chưa, phần nào làm bạn kẹt nhất, và bạn muốn xây hệ thống đến mức nào trong 1-3 tháng tới.</p></div></div>
+  </div>
+</div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="section final-cta" id="final-cta">
+<div class="container">
+  <h2>Bot Không Làm Bạn Kỷ Luật Hơn<br><span class="text-gradient">Nếu Trong Code Không Có Kỷ Luật.</span></h2>
+  <p>Nếu bạn nghiêm túc muốn biến chiến lược thành rule, code, kiểm chứng, risk và vận hành, hãy để lại case thật. Mình đọc trước rồi mới tư vấn hướng đi phù hợp.</p>
+
+  <div class="btn-group">
+    <a href="#" class="btn btn-primary" data-open-lead-form data-lead-type="consultation">Đăng ký tư vấn</a>
+    <a href="#" class="btn btn-secondary" data-open-consultation-modal>Mở form tư vấn chi tiết</a>
+    <a href="#roadmap" class="btn btn-ghost">Xem lại lộ trình</a>
+  </div>
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+<div class="container">
+  <div class="footer-grid">
+    <div>
+      <a href="#" class="nav-logo">Hung<span>AAI</span></a>
+      <p>Auto & AI Trade, MQL4/MQL5 coaching 1:1, viết robot theo yêu cầu và xử lý vấn đề về robot.</p>
+    </div>
+    <div>
+      <h4>Liên hệ</h4>
+      <p>Đinh Văn Hùng</p>
+      <p>SĐT/Zalo/Telegram: 0868 808 183</p>
+      <p>Email: contact@dinhvanhung.com</p>
+    </div>
+    <div>
+      <h4>Dịch vụ</h4>
+      <p>Đào tạo lập trình MQL4/MQL5</p>
+      <p>Coach 1:1 xây bot theo chiến lược riêng</p>
+      <p>Review, debug và nâng cấp robot</p>
+    </div>
+  </div>
+  <p class="footer-note">© 2026 HungAAI. Trading có rủi ro. Không có cam kết lợi nhuận.</p>
+</div>
+</footer>
+
+<!-- LEAD FORM MODAL -->
+<div class="lead-modal" id="leadModal" aria-hidden="true">
+  <div class="lead-modal-overlay" data-close-lead-form></div>
+  <div class="lead-modal-content card" role="dialog" aria-modal="true" aria-labelledby="leadModalTitle">
+    <button class="lead-modal-close" id="leadModalCloseBtn" type="button" aria-label="Đóng form">×</button>
+    <div class="lead-form-intro">
+      <span class="section-label" style="margin-bottom:8px;">Đăng ký tư vấn 1:1</span>
+    </div>
+    <form class="lead-form" id="leadCaptureForm" novalidate>
+      <div class="form-row">
+        <label class="form-label" for="leadName">Họ và tên <span class="req">*</span></label>
+        <input class="form-input" type="text" id="leadName" name="name" autocomplete="name" required maxlength="120" placeholder="Nguyễn Văn A">
+      </div>
+      <div class="form-row">
+        <label class="form-label" for="leadEmail">Email <span class="req">*</span></label>
+        <input class="form-input" type="email" id="leadEmail" name="email" autocomplete="email" required maxlength="254" placeholder="ban@email.com">
+      </div>
+      <div class="form-row">
+        <label class="form-label" for="leadPhone">Số điện thoại <span class="req">*</span></label>
+        <input class="form-input" type="tel" id="leadPhone" name="phone" autocomplete="tel" required maxlength="20" placeholder="0901 234 567">
+      </div>
+      <fieldset class="form-row lead-options">
+        <legend class="form-label">Bạn cần tư vấn về nội dung nào? <span class="req">*</span></legend>
+        <label class="option-item" for="leadOptRegisterNow">
+          <input type="checkbox" id="leadOptRegisterNow" name="want_register_now">
+          <span>Coaching 1:1 MQL5</span>
+        </label>
+        <label class="option-item" for="leadOptConsultation">
+          <input type="checkbox" id="leadOptConsultation" name="want_consultation">
+          <span>Tư vấn xây bot theo chiến lược riêng</span>
+        </label>
+      </fieldset>
+      <div class="payment-deposit-card">
+        <div class="payment-deposit-copy">
+          <span class="payment-kicker">Đặt cọc giữ lịch tư vấn</span>
+          <strong>1.000.000đ</strong>
+          <p>Nếu hai bên không đạt thỏa thuận sau buổi tư vấn, mình hoàn lại tiền cọc.</p>
+        </div>
+        <div class="payment-qr-wrap">
+          <img
+            id="paymentQrImage"
+            src="https://qr.sepay.vn/img?acc=4358967&bank=ACB&amount=1000000&des=MQL5_Coc"
+            alt="QR chuyển khoản cọc tư vấn MQL5 qua ACB"
+            loading="lazy"
+          >
+        </div>
+        <div class="payment-bank-info">
+          <div><span>Ngân hàng</span><strong>ACB</strong></div>
+          <div><span>Số tài khoản</span><strong>4358967</strong></div>
+          <div><span>Nội dung CK</span><strong id="paymentTransferContent">MQL5_Coc</strong></div>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary lead-form-submit" id="leadSubmitBtn">
+        <span class="btn-text">Gửi thông tin tư vấn</span>
+        <span class="btn-loading" hidden>Đang gửi...</span>
+      </button>
+    </form>
+    <div class="form-message" id="leadFormMessage" role="status" aria-live="polite" aria-atomic="true"></div>
+  </div>
+</div>
+
+<!-- CONSULTATION FORM MODAL -->
+<div class="consultation-modal" id="consultationModal" aria-hidden="true">
+  <div class="consultation-modal-overlay" data-close-consultation-modal></div>
+  <div class="consultation-modal-content card" role="dialog" aria-modal="true" aria-labelledby="consultationModalTitle">
+    <button class="consultation-modal-close" id="consultationModalCloseBtn" type="button" aria-label="Đóng form tư vấn">×</button>
+    <div class="lead-form-intro">
+      <span class="section-label" style="margin-bottom:8px;">Form tư vấn chi tiết</span>
+      <h3 class="lead-form-title" id="consultationModalTitle">Đăng ký tư vấn coaching 1:1 lập trình bot MQL5</h3>
+      <p class="lead-form-note">Điền rõ case thật để mình hiểu rule, code, risk hoặc phần vận hành đang nghẽn.</p>
+    </div>
+    <div class="consultation-iframe-wrap">
+      <iframe
+        src="https://docs.google.com/forms/d/e/1FAIpQLScji7NfQqHB9DcvLvEzVWLrYEANddj5KxgXmy1Nj9pW60O9XQ/viewform?embedded=true"
+        width="640"
+        height="1529"
+        frameborder="0"
+        marginheight="0"
+        marginwidth="0"
+        title="Google Form đăng ký tư vấn coaching 1:1 MQL5"
+        loading="lazy"
+      >Đang tải…</iframe>
+    </div>
+  </div>
+</div>
+
+<!-- SALES CHATBOT -->
+<div class="sales-chatbot" id="salesChatbot">
+  <button class="chatbot-toggle" id="chatbotToggle" type="button" aria-label="Mở chat tư vấn" aria-expanded="false">
+    <span class="chatbot-toggle-icon">💬</span>
+    <span class="chatbot-toggle-text">Tư vấn nhanh</span>
+  </button>
+  <div class="chatbot-panel" id="chatbotPanel" aria-hidden="true">
+    <div class="chatbot-header">
+      <div>
+        <div class="chatbot-kicker">HungAAI Assistant</div>
+        <strong>Hỏi nhanh về coaching MQL5</strong>
+      </div>
+      <button class="chatbot-close" id="chatbotClose" type="button" aria-label="Đóng chat">×</button>
+    </div>
+    <div class="chatbot-messages" id="chatbotMessages" aria-live="polite"></div>
+    <div class="chatbot-suggestions" id="chatbotSuggestions">
+      <button type="button" data-chat-question="Tôi chưa biết code">Chưa biết code</button>
+      <button type="button" data-chat-question="Có cam kết lợi nhuận không?">Lợi nhuận?</button>
+      <button type="button" data-chat-question="Tôi muốn tư vấn">Muốn tư vấn</button>
+    </div>
+    <form class="chatbot-form" id="chatbotForm">
+      <input id="chatbotInput" type="text" autocomplete="off" placeholder="Nhập câu hỏi của bạn..." aria-label="Nhập câu hỏi cho chatbot">
+      <button type="submit" aria-label="Gửi câu hỏi">Gửi</button>
+    </form>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script src="main.js"></script>
+</body>
+</html>

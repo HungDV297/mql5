@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin CRM – HungAAI MQL5</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/admin/admin.css" />
+</head>
+<body class="admin-app">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div>
+        <div class="brand">Hung<span>AAI</span> • Admin CRM</div>
+        <div class="hint">Đường dẫn: <strong>/admin</strong> • API nội bộ • Không có đăng nhập (MVP local)</div>
+      </div>
+      <nav class="tabs" role="tablist" aria-label="Mục quản trị">
+        <button type="button" class="tab is-active" data-tab="products" role="tab" aria-selected="true">Sản phẩm</button>
+        <button type="button" class="tab" data-tab="customers" role="tab" aria-selected="false">Khách hàng</button>
+        <button type="button" class="tab" data-tab="orders" role="tab" aria-selected="false">Đơn hàng</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="panel-products" class="panel is-active" role="tabpanel">
+      <div class="toolbar">
+        <div class="toolbar-title">Danh sách sản phẩm (<span id="count-products">0</span>)</div>
+        <button type="button" class="btn btn-primary js-open-modal" data-entity="product" data-mode="create">＋ Thêm sản phẩm</button>
+      </div>
+      <div class="card table-wrap">
+        <table class="table" id="table-products"></table>
+        <div class="empty-state" id="empty-products">Chưa có sản phẩm.</div>
+      </div>
+    </section>
+
+    <section id="panel-customers" class="panel" role="tabpanel" hidden>
+      <div class="toolbar">
+        <div class="toolbar-title">Danh sách khách hàng (<span id="count-customers">0</span>)</div>
+        <button type="button" class="btn btn-primary js-open-modal" data-entity="customer" data-mode="create">＋ Thêm khách</button>
+      </div>
+      <div class="card table-wrap">
+        <table class="table" id="table-customers"></table>
+        <div class="empty-state" id="empty-customers">Chưa có khách hàng.</div>
+      </div>
+    </section>
+
+    <section id="panel-orders" class="panel" role="tabpanel" hidden>
+      <div class="toolbar">
+        <div class="toolbar-title">Danh sách đơn hàng (<span id="count-orders">0</span>)</div>
+        <button type="button" class="btn btn-primary js-open-modal" data-entity="order" data-mode="create">＋ Thêm đơn</button>
+      </div>
+      <div class="card table-wrap">
+        <table class="table" id="table-orders"></table>
+        <div class="empty-state" id="empty-orders">Chưa có đơn hàng.</div>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" aria-live="polite"></div>
+
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-panel" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <div class="modal-title" id="modal-title">Chi tiết</div>
+        <button type="button" class="icon-btn" data-close-modal aria-label="Đóng">✕</button>
+      </div>
+      <form class="modal-body" id="modal-form"></form>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-close-modal>Hủy</button>
+        <button type="submit" class="btn btn-primary" form="modal-form">Lưu</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/admin/admin.js" defer></script>
+</body>
+</html>
