@@ -139,10 +139,12 @@ declare
   row_data jsonb;
   lead_name text;
   lead_email text;
+  lead_is_test boolean;
 begin
   row_data := to_jsonb(new);
   lead_email := trim(coalesce(row_data->>'email', ''));
   lead_name := trim(coalesce(row_data->>'full_name', row_data->>'name', ''));
+  lead_is_test := position('+test' in lower(lead_email)) > 0;
 
   if lead_email = '' then
     return new;
@@ -182,7 +184,7 @@ begin
       '3 điểm cần rõ trước khi viết bot MQL5',
       'lead_value_day_2',
       jsonb_build_object('name', lead_name),
-      now() + interval '2 days',
+      case when lead_is_test then now() else now() + interval '2 days' end,
       new.id::text
     ),
     (
@@ -192,7 +194,7 @@ begin
       'Nếu muốn mình soi case MQL5 của bạn',
       'lead_offer_day_3',
       jsonb_build_object('name', lead_name),
-      now() + interval '3 days',
+      case when lead_is_test then now() else now() + interval '3 days' end,
       new.id::text
     );
 
@@ -214,6 +216,7 @@ set search_path = public
 as $$
 declare
   c record;
+  p record;
 begin
   if coalesce(new.payment_content, '') = 'MQL5CocTMP' then
     return new;
@@ -232,6 +235,12 @@ begin
   into c
   from public.customers
   where id = new.customer_id
+  limit 1;
+
+  select id, name, price
+  into p
+  from public.products
+  where id = new.product_id
   limit 1;
 
   if c.email is null or trim(c.email) = '' then
@@ -258,6 +267,9 @@ begin
     jsonb_build_object(
       'name', trim(coalesce(c.name, '')),
       'phone', coalesce(c.phone, ''),
+      'product_id', new.product_id,
+      'product_name', coalesce(p.name, 'Coaching 1:1 MQL5'),
+      'product_price', coalesce(p.price, new.amount),
       'order_id', new.id,
       'amount', new.amount,
       'status', new.status,

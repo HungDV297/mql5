@@ -1,0 +1,22 @@
+Từ hôm nay, khách để lại thông tin trên website HungAAI sẽ bắt đầu nhận được email chăm sóc tự động.
+
+Không phải kiểu spam bán hàng liên tục.
+
+Mình muốn mỗi email gửi đi đều có một việc rõ ràng:
+
+- giúp khách nhìn lại rule mình đang trade,
+- nhắc về risk trước khi nói đến bot,
+- chia sẻ cách kiểm chứng EA bằng backtest, forward test và log,
+- và nếu phù hợp thì mời khách đi tiếp coaching 1:1 MQL5.
+
+Lý do mình làm việc này khá đơn giản: nhiều người điền form xong chưa chắc đã sẵn sàng mua ngay. Nhưng họ vẫn cần một vài gợi ý tử tế để hiểu mình đang kẹt ở đâu.
+
+Nếu email chỉ để thúc mua, nó rất dễ thành ồn.
+
+Còn nếu email giúp người đọc rõ hơn về hệ thống của họ, thì đó là một phần của trải nghiệm tư vấn.
+
+Bot không làm trader kỷ luật hơn nếu trong rule không có kỷ luật.
+
+Automation cũng vậy. Nó không thay mình quan tâm khách hàng. Nó chỉ giúp sự quan tâm đó đều đặn hơn, đúng lúc hơn, và đỡ bị quên giữa một ngày có quá nhiều việc.
+
+Website: https://your-site.com

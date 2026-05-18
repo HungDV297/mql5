@@ -13,6 +13,11 @@ Flow:
 4. If an order is created, a database trigger creates `order_confirmation` immediately.
 5. The `process-email-queue` Edge Function sends due queued emails through Resend and updates each row to `sent` or retries later.
 
+Test mode:
+
+- If the submitted email contains `+test`, for example `yourname+test@gmail.com`, all 3 lead emails are scheduled immediately instead of waiting 2 and 3 days.
+- Gmail aliases with `+test` still arrive in the original inbox.
+
 ## Run SQL
 
 Run the lead/customer migrations first if they have not been run yet:
@@ -35,6 +40,7 @@ It creates:
 - trigger `trg_queue_order_confirmation_email`
 
 The order confirmation trigger queues only after `payment_content` is no longer `MQL5CocTMP`, so customers receive the final transfer memo such as `MQL5Coc17`.
+The order confirmation payload includes product name, amount, order id, payment memo, and customer info.
 
 To schedule follow-up sending every 15 minutes, run this after deploying `process-email-queue`:
 

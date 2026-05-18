@@ -59,6 +59,12 @@ function customerName(event: EmailEvent): string {
     "ban";
 }
 
+function formatMoney(value: unknown): string {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return textValue(value);
+  return `${new Intl.NumberFormat("vi-VN", { maximumFractionDigits: 0 }).format(n)}đ`;
+}
+
 function renderTemplate(event: EmailEvent) {
   const name = htmlEscape(customerName(event));
   const siteUrl = textValue(Deno.env.get("SITE_URL"));
@@ -69,13 +75,14 @@ function renderTemplate(event: EmailEvent) {
       subject: event.subject || "HungAAI đã nhận thông tin của bạn",
       html: `
         <p>Chào ${name},</p>
-        <p>Mình đã nhận thông tin bạn để lại về coaching MQL5.</p>
-        <p>Bước tiếp theo, mình sẽ đọc case của bạn theo 3 phần: rule hiện tại, điểm đang kẹt, và mục tiêu bạn muốn xây trong 1-3 tháng tới.</p>
+        <p>Mình đã nhận thông tin bạn để lại về coaching 1:1 MQL5.</p>
+        <p>Trước khi nói về bot hay code, mình muốn đọc case thật của bạn trước: bạn đang trade theo rule nào, đã có EA/backtest/log chưa, và phần đang kẹt nhất là rule, code, dữ liệu, risk hay vận hành.</p>
+        <p>Coaching này không bán lời hứa lợi nhuận. Mục tiêu là giúp bạn làm rõ hệ thống: rule đủ rõ để code, risk có phanh, backtest/forward test có kiểm chứng, và bot chạy theo thứ bạn hiểu được.</p>
         <p>Trong lúc chờ phản hồi, bạn có thể ghi thêm rule vào/thoát lệnh, ảnh backtest hoặc log nếu có. Càng rõ thì buổi tư vấn càng đúng trọng tâm.</p>
         <p>HungAAI</p>
       `,
       text:
-        `Chào ${customerName(event)},\n\nMình đã nhận thông tin bạn để lại về coaching MQL5. Mình sẽ đọc case theo rule hiện tại, điểm đang kẹt, và mục tiêu bạn muốn xây trong 1-3 tháng tới.\n\nHungAAI`,
+        `Chào ${customerName(event)},\n\nMình đã nhận thông tin bạn để lại về coaching 1:1 MQL5.\n\nTrước khi nói về bot hay code, mình muốn đọc case thật của bạn trước: rule hiện tại, EA/backtest/log nếu có, và phần đang kẹt nhất.\n\nCoaching này không bán lời hứa lợi nhuận. Mục tiêu là giúp bạn làm rõ hệ thống: rule đủ rõ để code, risk có phanh, backtest/forward test có kiểm chứng.\n\nHungAAI`,
     };
   }
 
@@ -103,31 +110,38 @@ function renderTemplate(event: EmailEvent) {
       subject: event.subject || "Nếu muốn mình soi case MQL5 của bạn",
       html: `
         <p>Chào ${name},</p>
-        <p>Nếu bạn muốn đi tiếp, mình có thể soi case thật của bạn: rule, code, backtest, risk và cách vận hành.</p>
-        <p>Mục tiêu không phải bán thêm một file EA, mà là giúp bạn nhìn hệ thống của mình rõ hơn.</p>
+        <p>Nếu bạn muốn đi tiếp, coaching 1:1 MQL5 là cách để mình cùng bạn soi case thật: rule, code, backtest, risk và cách vận hành.</p>
+        <p>Bạn không cần mua thêm một file EA để có cảm giác yên tâm. Điều quan trọng hơn là hiểu hệ thống của mình: bot vào lệnh vì điều kiện nào, thoát vì điều kiện nào, rủi ro bị chặn ở đâu, và khi nào nên dừng để soi lại logic.</p>
+        <p>Trong coaching, mình đi theo hướng: làm rõ rule trước khi code, chuyển checklist thành MQL5 từng module, kiểm chứng bằng backtest/forward/log, đưa risk engine vào hệ thống, và dùng AI như đòn bẩy.</p>
+        <p>Nếu case của bạn phù hợp, mình sẽ nói nên bắt đầu từ đâu. Nếu chưa phù hợp để coaching, mình cũng nói thẳng để bạn không tốn tiền sai chỗ.</p>
         ${consultationUrl ? `<p><a href="${htmlEscape(consultationUrl)}">Mở lại trang đăng ký tư vấn</a></p>` : ""}
         <p>HungAAI</p>
       `,
       text:
-        `Chào ${customerName(event)},\n\nNếu bạn muốn đi tiếp, mình có thể soi case thật của bạn: rule, code, backtest, risk và cách vận hành.\n\n${consultationUrl}\n\nHungAAI`,
+        `Chào ${customerName(event)},\n\nNếu bạn muốn đi tiếp, coaching 1:1 MQL5 là cách để mình cùng bạn soi case thật: rule, code, backtest, risk và cách vận hành.\n\nMục tiêu là giúp bạn hiểu hệ thống của mình, không chỉ mua thêm một file EA.\n\n${consultationUrl}\n\nHungAAI`,
     };
   }
 
   if (event.template_key === "order_confirmation") {
     const orderId = htmlEscape(event.payload?.order_id);
     const paymentContent = htmlEscape(event.payload?.payment_content);
+    const productName = htmlEscape(event.payload?.product_name || "Coaching 1:1 MQL5");
+    const amount = htmlEscape(formatMoney(event.payload?.amount));
     return {
       subject: event.subject || "Xác nhận đơn hàng MQL5 của bạn",
       html: `
         <p>Chào ${name},</p>
-        <p>Hệ thống đã ghi nhận đơn hàng MQL5 của bạn.</p>
+        <p>Hệ thống đã ghi nhận đơn hàng của bạn.</p>
+        <p><strong>Sản phẩm:</strong> ${productName}</p>
+        <p><strong>Số tiền:</strong> ${amount}</p>
         <p><strong>Mã đơn:</strong> ${orderId || String(event.id)}</p>
         ${paymentContent ? `<p><strong>Nội dung chuyển khoản:</strong> ${paymentContent}</p>` : ""}
-        <p>Mình sẽ liên hệ để xác nhận và chốt lịch tư vấn.</p>
+        <p>Sau khi giao dịch được xác nhận, mình sẽ liên hệ để chốt lịch tư vấn và hướng dẫn bước chuẩn bị: rule hiện tại, EA/backtest/log nếu có, và mục tiêu bạn muốn xây trong 1-3 tháng tới.</p>
+        <p>Cảm ơn bạn đã tin tưởng. Mình sẽ đi cùng bạn theo hướng tỉnh táo: hiểu hệ thống trước, code sau, và không hứa lợi nhuận.</p>
         <p>HungAAI</p>
       `,
       text:
-        `Chào ${customerName(event)},\n\nHệ thống đã ghi nhận đơn hàng MQL5 của bạn. Mã đơn: ${textValue(event.payload?.order_id) || event.id}. Nội dung chuyển khoản: ${textValue(event.payload?.payment_content)}.\n\nHungAAI`,
+        `Chào ${customerName(event)},\n\nHệ thống đã ghi nhận đơn hàng của bạn.\n\nSản phẩm: ${textValue(event.payload?.product_name) || "Coaching 1:1 MQL5"}\nSố tiền: ${formatMoney(event.payload?.amount)}\nMã đơn: ${textValue(event.payload?.order_id) || event.id}\nNội dung chuyển khoản: ${textValue(event.payload?.payment_content)}\n\nSau khi giao dịch được xác nhận, mình sẽ liên hệ để chốt lịch tư vấn và hướng dẫn bước chuẩn bị.\n\nHungAAI`,
     };
   }
 
