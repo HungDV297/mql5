@@ -23,6 +23,9 @@ create table if not exists customers (
   updated_at timestamptz not null default now()
 );
 
+alter table customers
+  add column if not exists email text not null default '';
+
 create table if not exists orders (
   id bigserial primary key,
   customer_id bigint not null references customers(id),

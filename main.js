@@ -5,6 +5,7 @@
  * want_register_now, want_consultation, want_join_community.
  */
 const SUPABASE_REST_BASE = 'https://rhqmzccyvfiitojeqkfr.supabase.co/rest/v1';
+const SUPABASE_FUNCTIONS_BASE = 'https://rhqmzccyvfiitojeqkfr.functions.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY =
   'sb_publishable_EGy6mohkRIoPQt1RErhrRw_jr8FaqRr';
 
@@ -164,6 +165,27 @@ async function insertLead(payload) {
   });
 }
 
+async function processEmailQueue(limit = 10) {
+  const res = await fetch(`${SUPABASE_FUNCTIONS_BASE}/process-email-queue`, {
+    method: 'POST',
+    headers: supabaseHeaders({ 'Content-Type': 'application/json' }),
+    body: JSON.stringify({ limit }),
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(text || `Email queue ${res.status}`);
+  }
+
+  return res.json().catch(() => null);
+}
+
+function triggerEmailQueue(limit = 10) {
+  void processEmailQueue(limit).catch((err) => {
+    console.warn('[email] queue processing failed', err);
+  });
+}
+
 async function findCustomerByPhone(phone) {
   const phoneDigits = normalizePhone(phone);
   const rows = await supabaseRequest(
@@ -175,7 +197,20 @@ async function findCustomerByPhone(phone) {
 async function upsertCustomer({ name, email, phone }) {
   const phoneDigits = normalizePhone(phone);
   const existing = await findCustomerByPhone(phoneDigits);
-  if (existing) return existing;
+  if (existing) {
+    const rows = await supabaseRequest(`/customers?id=eq.${encodeURIComponent(String(existing.id))}`, {
+      method: 'PATCH',
+      prefer: 'return=representation',
+      body: {
+        name,
+        email,
+        phone: phoneDigits,
+        zalo: existing.zalo || phoneDigits,
+        updated_at: new Date().toISOString(),
+      },
+    });
+    return rowFirst(rows) ?? existing;
+  }
 
   const rows = await supabaseRequest('/customers', {
     method: 'POST',
@@ -386,6 +421,7 @@ form?.addEventListener('submit', async (e) => {
 
   const payload = {
     name,
+    full_name: name,
     email,
     phone,
     want_register_now: wantRegisterNow,
@@ -395,15 +431,18 @@ form?.addEventListener('submit', async (e) => {
 
   setLoading(true);
   try {
+    await insertLead(payload);
+    triggerEmailQueue(5);
+
     if (wantRegisterNow) {
       const customer = await upsertCustomer({ name, email, phone });
       const order = await createCoachingOrder(customer.id);
+      triggerEmailQueue(5);
       showPaymentResult(order.payment_content, order.amount, order.id);
       showMessage('Đã tạo đơn đặt cọc. Bạn chuyển khoản theo QR, hệ thống sẽ tự xác nhận khi nhận tiền.', 'success');
       form.reset();
       presetLeadOptions('register_now');
     } else {
-      await insertLead(payload);
       showMessage('Đã nhận thông tin. Mình sẽ đọc case và phản hồi sớm.', 'success');
       form.reset();
       setTimeout(closeLeadModal, 1200);
