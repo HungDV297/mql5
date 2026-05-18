@@ -34,6 +34,14 @@ It creates:
 - trigger `trg_queue_lead_email_sequence`
 - trigger `trg_queue_order_confirmation_email`
 
+The order confirmation trigger queues only after `payment_content` is no longer `MQL5CocTMP`, so customers receive the final transfer memo such as `MQL5Coc17`.
+
+To schedule follow-up sending every 15 minutes, run this after deploying `process-email-queue`:
+
+```text
+database/migration_email_cron.sql
+```
+
 ## Required Supabase Secrets
 
 ```bash
@@ -82,6 +90,7 @@ The landing page pings `process-email-queue` after a successful submit so the we
 
 For the 2-day and 3-day follow-up emails, add a scheduled trigger outside the frontend. Options:
 
+- Run `database/migration_email_cron.sql` to create a Supabase `pg_cron` job every 15 minutes.
 - Supabase Scheduled Functions / Cron if enabled in your project.
 - An external cron service calling `process-email-queue` every 5-15 minutes.
 - GitHub Actions cron calling the Edge Function.
@@ -94,7 +103,9 @@ Every 5 or 15 minutes: POST /process-email-queue {"limit": 20}
 
 ## Security Notes
 
-Do not give anon users direct insert/update/select policies on `email_events`.
+Do not give anon users direct insert/update policies on `email_events`.
+
+Current MVP note: the admin CRM reads `email_events` from the browser, so `database/migration_email_events.sql` grants anon `select` on `email_events`. This matches the existing unauthenticated admin model but should be tightened before production.
 
 The public frontend never sees `RESEND_API_KEY` or `SERVICE_ROLE_KEY`. It only inserts normal `leads` and `orders`; database triggers create the queue rows.
 

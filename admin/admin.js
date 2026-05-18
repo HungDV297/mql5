@@ -7,6 +7,8 @@
   let cacheCustomers = [];
   /** @type {any[]} */
   let cacheOrders = [];
+  /** @type {any[]} */
+  let cacheEmailEvents = [];
 
   /** @typedef {{entity:string,mode:'create'|'edit',payload?:any}} ModalState */
 
@@ -106,7 +108,7 @@
   }
 
   function parseApiUrl(url) {
-    const m = String(url).match(/^\/api\/(products|customers|orders)(?:\/([^/]+))?$/);
+    const m = String(url).match(/^\/api\/(products|customers|orders|email-events)(?:\/([^/]+))?$/);
     if (!m) return null;
     return { entity: m[1], id: m[2] ? decodeURIComponent(m[2]) : null };
   }
@@ -278,6 +280,13 @@
       }
     }
 
+    if (entity === 'email-events') {
+      if (method === 'GET') {
+        const rows = await supabaseRequest('/email_events?select=*&order=created_at.desc&limit=100');
+        return { ok: true, data: rows };
+      }
+    }
+
     throw new Error(`API Supabase chưa hỗ trợ: ${method} ${url}`);
   }
 
@@ -333,6 +342,9 @@
     if (status === 'pending') return 'badge badge-pending';
     if (status === 'success') return 'badge badge-success';
     if (status === 'cancelled') return 'badge badge-cancelled';
+    if (status === 'sent') return 'badge badge-success';
+    if (status === 'failed') return 'badge badge-cancelled';
+    if (status === 'queued' || status === 'processing') return 'badge badge-pending';
     return 'badge';
   }
 
@@ -340,6 +352,7 @@
     qs('#count-products').textContent = String(cacheProducts.length);
     qs('#count-customers').textContent = String(cacheCustomers.length);
     qs('#count-orders').textContent = String(cacheOrders.length);
+    qs('#count-emails').textContent = String(cacheEmailEvents.length);
   }
 
   function toggleEmpty(which, isEmpty) {
@@ -506,22 +519,63 @@
     }
   }
 
+  function renderEmails() {
+    const tbl = qs('#table-emails');
+    const empty = cacheEmailEvents.length === 0;
+    toggleEmpty('emails', empty);
+    if (empty) return;
+
+    tbl.innerHTML = `
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Loại</th>
+          <th>Người nhận</th>
+          <th>Tiêu đề</th>
+          <th>TT</th>
+          <th>Lịch gửi</th>
+          <th>Đã gửi</th>
+          <th>Lỗi</th>
+        </tr>
+      </thead>
+      <tbody></tbody>`;
+
+    const tbody = qs('tbody', tbl);
+    for (const ev of cacheEmailEvents) {
+      const recipient = `${String(ev.recipient_name ?? '')} <${String(ev.recipient_email ?? '')}>`;
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td class="mono">${escapeHtml(ev.id)}</td>
+        <td class="mono">${escapeHtml(ev.template_key ?? ev.event_type ?? '')}</td>
+        <td><div class="ellipsis" title="${escapeHtml(recipient)}">${escapeHtml(recipient)}</div></td>
+        <td><div class="ellipsis" title="${escapeHtml(ev.subject)}">${escapeHtml(ev.subject)}</div></td>
+        <td><span class="${badgeClass(ev.status)}">${escapeHtml(ev.status)}</span></td>
+        <td class="mono">${escapeHtml(ev.scheduled_at)}</td>
+        <td class="mono">${escapeHtml(ev.sent_at ?? '')}</td>
+        <td><div class="ellipsis" title="${escapeHtml(ev.last_error ?? '')}">${escapeHtml(ev.last_error ?? '')}</div></td>`;
+      tbody.appendChild(row);
+    }
+  }
+
   function renderAll() {
     setCounts();
     renderProducts();
     renderCustomers();
     renderOrders();
+    renderEmails();
   }
 
   async function reloadAll() {
-    const [p, c, o] = await Promise.all([
+    const [p, c, o, e] = await Promise.all([
       fetchJson('GET', '/api/products'),
       fetchJson('GET', '/api/customers'),
       fetchJson('GET', '/api/orders'),
+      fetchJson('GET', '/api/email-events'),
     ]);
     cacheProducts = p.data ?? [];
     cacheCustomers = c.data ?? [];
     cacheOrders = o.data ?? [];
+    cacheEmailEvents = e.data ?? [];
     renderAll();
   }
 
@@ -844,7 +898,8 @@
       const match =
         (key === 'products' && pid === 'panel-products') ||
         (key === 'customers' && pid === 'panel-customers') ||
-        (key === 'orders' && pid === 'panel-orders');
+        (key === 'orders' && pid === 'panel-orders') ||
+        (key === 'emails' && pid === 'panel-emails');
       /** @type {HTMLElement} */ (p).toggleAttribute('hidden', !match);
       /** @type {HTMLElement} */ (p).classList.toggle('is-active', match);
     });

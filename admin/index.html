@@ -18,6 +18,7 @@
         <button type="button" class="tab is-active" data-tab="products" role="tab" aria-selected="true">Sản phẩm</button>
         <button type="button" class="tab" data-tab="customers" role="tab" aria-selected="false">Khách hàng</button>
         <button type="button" class="tab" data-tab="orders" role="tab" aria-selected="false">Đơn hàng</button>
+        <button type="button" class="tab" data-tab="emails" role="tab" aria-selected="false">Email</button>
       </nav>
     </div>
   </header>
@@ -53,6 +54,15 @@
       <div class="card table-wrap">
         <table class="table" id="table-orders"></table>
         <div class="empty-state" id="empty-orders">Chưa có đơn hàng.</div>
+      </div>
+    </section>
+    <section id="panel-emails" class="panel" role="tabpanel" hidden>
+      <div class="toolbar">
+        <div class="toolbar-title">Nhat ky email (<span id="count-emails">0</span>)</div>
+      </div>
+      <div class="card table-wrap">
+        <table class="table" id="table-emails"></table>
+        <div class="empty-state" id="empty-emails">Chua co email nao trong hang doi.</div>
       </div>
     </section>
   </main>

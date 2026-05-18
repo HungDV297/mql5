@@ -97,6 +97,10 @@ drop policy if exists "mvp anon insert email events" on public.email_events;
 drop policy if exists "mvp anon select email events" on public.email_events;
 drop policy if exists "mvp anon update email events" on public.email_events;
 
+create policy "mvp anon select email events"
+  on public.email_events for select to anon
+  using (true);
+
 create or replace function public.claim_due_email_events(batch_limit integer default 10)
 returns setof public.email_events
 language plpgsql
@@ -211,6 +215,19 @@ as $$
 declare
   c record;
 begin
+  if coalesce(new.payment_content, '') = 'MQL5CocTMP' then
+    return new;
+  end if;
+
+  if exists (
+    select 1
+    from public.email_events e
+    where e.template_key = 'order_confirmation'
+      and e.order_id = new.id
+  ) then
+    return new;
+  end if;
+
   select id, name, email, phone
   into c
   from public.customers
@@ -257,6 +274,6 @@ $$;
 
 drop trigger if exists trg_queue_order_confirmation_email on public.orders;
 create trigger trg_queue_order_confirmation_email
-after insert on public.orders
+after insert or update of payment_content on public.orders
 for each row
 execute function public.queue_order_confirmation_email();
