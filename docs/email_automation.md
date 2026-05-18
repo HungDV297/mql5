@@ -16,7 +16,20 @@ Flow:
 Test mode:
 
 - If the submitted email contains `+test`, for example `yourname+test@gmail.com`, all 3 lead emails are scheduled immediately instead of waiting 2 and 3 days.
-- Gmail aliases with `+test` still arrive in the original inbox.
+- The queue sends to the normalized inbox email, for example `yourname@gmail.com`, so Resend test sender `onboarding@resend.dev` can still deliver to your verified account email.
+
+To repair older failed test rows that still include `+test`, run:
+
+```sql
+update public.email_events
+set
+  recipient_email = regexp_replace(recipient_email, '\+test(?=@)', '', 'i'),
+  status = 'queued',
+  attempts = 0,
+  last_error = null,
+  updated_at = now()
+where recipient_email ilike '%+test@%';
+```
 
 ## Run SQL
 

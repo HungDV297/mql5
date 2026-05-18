@@ -139,12 +139,17 @@ declare
   row_data jsonb;
   lead_name text;
   lead_email text;
+  recipient_email text;
   lead_is_test boolean;
 begin
   row_data := to_jsonb(new);
   lead_email := trim(coalesce(row_data->>'email', ''));
   lead_name := trim(coalesce(row_data->>'full_name', row_data->>'name', ''));
   lead_is_test := position('+test' in lower(lead_email)) > 0;
+  recipient_email := case
+    when lead_is_test then regexp_replace(lead_email, '\+test(?=@)', '', 'i')
+    else lead_email
+  end;
 
   if lead_email = '' then
     return new;
@@ -163,12 +168,14 @@ begin
   values
     (
       'lead_welcome',
-      lead_email,
+      recipient_email,
       lead_name,
       'HungAAI đã nhận thông tin của bạn',
       'lead_welcome',
       jsonb_build_object(
         'name', lead_name,
+        'submitted_email', lead_email,
+        'is_test', lead_is_test,
         'phone', coalesce(row_data->>'phone', ''),
         'want_register_now', coalesce((row_data->>'want_register_now')::boolean, false),
         'want_consultation', coalesce((row_data->>'want_consultation')::boolean, false),
@@ -179,21 +186,21 @@ begin
     ),
     (
       'lead_value_day_2',
-      lead_email,
+      recipient_email,
       lead_name,
       '3 điểm cần rõ trước khi viết bot MQL5',
       'lead_value_day_2',
-      jsonb_build_object('name', lead_name),
+      jsonb_build_object('name', lead_name, 'submitted_email', lead_email, 'is_test', lead_is_test),
       case when lead_is_test then now() else now() + interval '2 days' end,
       new.id::text
     ),
     (
       'lead_offer_day_3',
-      lead_email,
+      recipient_email,
       lead_name,
       'Nếu muốn mình soi case MQL5 của bạn',
       'lead_offer_day_3',
-      jsonb_build_object('name', lead_name),
+      jsonb_build_object('name', lead_name, 'submitted_email', lead_email, 'is_test', lead_is_test),
       case when lead_is_test then now() else now() + interval '3 days' end,
       new.id::text
     );
