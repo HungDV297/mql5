@@ -14,6 +14,7 @@ supabase secrets set SITE_URL="https://your-site.com"
 supabase secrets set SERVICE_ROLE_KEY="your-service-role-key"
 ```
 
+`EMAIL_FROM` must use a domain verified in Resend. Do not use a Gmail/Yahoo address as the sender, for example `yourname@gmail.com`, because Resend will reject it with a domain-not-verified error.
 `EMAIL_REPLY_TO` and `SITE_URL` are optional. `SITE_URL` is used for CORS; if it is not set, the function allows all origins.
 `SERVICE_ROLE_KEY` is required by `process-email-queue`, not by the direct `send-email` function. Supabase does not allow custom secret names that start with `SUPABASE_`, so use `SERVICE_ROLE_KEY`.
 

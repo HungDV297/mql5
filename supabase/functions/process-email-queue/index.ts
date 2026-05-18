@@ -66,50 +66,50 @@ function renderTemplate(event: EmailEvent) {
 
   if (event.template_key === "lead_welcome") {
     return {
-      subject: event.subject || "HungAAI da nhan thong tin cua ban",
+      subject: event.subject || "HungAAI đã nhận thông tin của bạn",
       html: `
-        <p>Chao ${name},</p>
-        <p>Minh da nhan thong tin ban de lai ve coaching MQL5.</p>
-        <p>Buoc tiep theo, minh se doc case cua ban theo 3 phan: rule hien tai, diem dang ket, va muc tieu ban muon xay trong 1-3 thang toi.</p>
-        <p>Trong luc cho phan hoi, ban co the ghi them rule vao/thoat lenh, anh backtest hoac log neu co. Cang ro thi buoi tu van cang dung trong tam.</p>
+        <p>Chào ${name},</p>
+        <p>Mình đã nhận thông tin bạn để lại về coaching MQL5.</p>
+        <p>Bước tiếp theo, mình sẽ đọc case của bạn theo 3 phần: rule hiện tại, điểm đang kẹt, và mục tiêu bạn muốn xây trong 1-3 tháng tới.</p>
+        <p>Trong lúc chờ phản hồi, bạn có thể ghi thêm rule vào/thoát lệnh, ảnh backtest hoặc log nếu có. Càng rõ thì buổi tư vấn càng đúng trọng tâm.</p>
         <p>HungAAI</p>
       `,
       text:
-        `Chao ${customerName(event)},\n\nMinh da nhan thong tin ban de lai ve coaching MQL5. Minh se doc case theo rule hien tai, diem dang ket, va muc tieu ban muon xay trong 1-3 thang toi.\n\nHungAAI`,
+        `Chào ${customerName(event)},\n\nMình đã nhận thông tin bạn để lại về coaching MQL5. Mình sẽ đọc case theo rule hiện tại, điểm đang kẹt, và mục tiêu bạn muốn xây trong 1-3 tháng tới.\n\nHungAAI`,
     };
   }
 
   if (event.template_key === "lead_value_day_2") {
     return {
-      subject: event.subject || "3 diem can ro truoc khi viet bot MQL5",
+      subject: event.subject || "3 điểm cần rõ trước khi viết bot MQL5",
       html: `
-        <p>Chao ${name},</p>
-        <p>Truoc khi viet bot MQL5, co 3 diem nen lam ro:</p>
+        <p>Chào ${name},</p>
+        <p>Trước khi viết bot MQL5, có 3 điểm nên làm rõ:</p>
         <ol>
-          <li>Dieu kien vao/thoat lenh co viet thanh checklist duoc khong.</li>
-          <li>Risk moi lenh, daily loss va dieu kien dung bot da co chua.</li>
-          <li>Backtest co du sach de tin, hay chi dang nhin equity dep.</li>
+          <li>Điều kiện vào/thoát lệnh có viết thành checklist được không.</li>
+          <li>Risk mỗi lệnh, daily loss và điều kiện dừng bot đã có chưa.</li>
+          <li>Backtest có đủ sạch để tin, hay chỉ đang nhìn equity đẹp.</li>
         </ol>
-        <p>Bot khong sua mot rule mo ho. No chi thuc thi su mo ho do nhanh hon.</p>
+        <p>Bot không sửa một rule mơ hồ. Nó chỉ thực thi sự mơ hồ đó nhanh hơn.</p>
         <p>HungAAI</p>
       `,
       text:
-        `Chao ${customerName(event)},\n\nTruoc khi viet bot MQL5, hay lam ro: checklist vao/thoat lenh, risk/dieu kien dung bot, va chat luong backtest.\n\nHungAAI`,
+        `Chào ${customerName(event)},\n\nTrước khi viết bot MQL5, hãy làm rõ: checklist vào/thoát lệnh, risk/điều kiện dừng bot, và chất lượng backtest.\n\nHungAAI`,
     };
   }
 
   if (event.template_key === "lead_offer_day_3") {
     return {
-      subject: event.subject || "Neu muon minh soi case MQL5 cua ban",
+      subject: event.subject || "Nếu muốn mình soi case MQL5 của bạn",
       html: `
-        <p>Chao ${name},</p>
-        <p>Neu ban muon di tiep, minh co the soi case that cua ban: rule, code, backtest, risk va cach van hanh.</p>
-        <p>Muc tieu khong phai ban them mot file EA, ma la giup ban nhin he thong cua minh ro hon.</p>
-        ${consultationUrl ? `<p><a href="${htmlEscape(consultationUrl)}">Mo lai trang dang ky tu van</a></p>` : ""}
+        <p>Chào ${name},</p>
+        <p>Nếu bạn muốn đi tiếp, mình có thể soi case thật của bạn: rule, code, backtest, risk và cách vận hành.</p>
+        <p>Mục tiêu không phải bán thêm một file EA, mà là giúp bạn nhìn hệ thống của mình rõ hơn.</p>
+        ${consultationUrl ? `<p><a href="${htmlEscape(consultationUrl)}">Mở lại trang đăng ký tư vấn</a></p>` : ""}
         <p>HungAAI</p>
       `,
       text:
-        `Chao ${customerName(event)},\n\nNeu ban muon di tiep, minh co the soi case that cua ban: rule, code, backtest, risk va cach van hanh.\n\n${consultationUrl}\n\nHungAAI`,
+        `Chào ${customerName(event)},\n\nNếu bạn muốn đi tiếp, mình có thể soi case thật của bạn: rule, code, backtest, risk và cách vận hành.\n\n${consultationUrl}\n\nHungAAI`,
     };
   }
 
@@ -117,24 +117,24 @@ function renderTemplate(event: EmailEvent) {
     const orderId = htmlEscape(event.payload?.order_id);
     const paymentContent = htmlEscape(event.payload?.payment_content);
     return {
-      subject: event.subject || "Xac nhan don hang MQL5 cua ban",
+      subject: event.subject || "Xác nhận đơn hàng MQL5 của bạn",
       html: `
-        <p>Chao ${name},</p>
-        <p>He thong da ghi nhan don hang MQL5 cua ban.</p>
-        <p><strong>Ma don:</strong> ${orderId || String(event.id)}</p>
-        ${paymentContent ? `<p><strong>Noi dung chuyen khoan:</strong> ${paymentContent}</p>` : ""}
-        <p>Minh se lien he de xac nhan va chot lich tu van.</p>
+        <p>Chào ${name},</p>
+        <p>Hệ thống đã ghi nhận đơn hàng MQL5 của bạn.</p>
+        <p><strong>Mã đơn:</strong> ${orderId || String(event.id)}</p>
+        ${paymentContent ? `<p><strong>Nội dung chuyển khoản:</strong> ${paymentContent}</p>` : ""}
+        <p>Mình sẽ liên hệ để xác nhận và chốt lịch tư vấn.</p>
         <p>HungAAI</p>
       `,
       text:
-        `Chao ${customerName(event)},\n\nHe thong da ghi nhan don hang MQL5 cua ban. Ma don: ${textValue(event.payload?.order_id) || event.id}. Noi dung chuyen khoan: ${textValue(event.payload?.payment_content)}.\n\nHungAAI`,
+        `Chào ${customerName(event)},\n\nHệ thống đã ghi nhận đơn hàng MQL5 của bạn. Mã đơn: ${textValue(event.payload?.order_id) || event.id}. Nội dung chuyển khoản: ${textValue(event.payload?.payment_content)}.\n\nHungAAI`,
     };
   }
 
   return {
-    subject: event.subject || "Thong bao tu HungAAI",
-    html: `<p>Chao ${name},</p><p>Cam on ban da quan tam.</p><p>HungAAI</p>`,
-    text: `Chao ${customerName(event)},\n\nCam on ban da quan tam.\n\nHungAAI`,
+    subject: event.subject || "Thông báo từ HungAAI",
+    html: `<p>Chào ${name},</p><p>Cảm ơn bạn đã quan tâm.</p><p>HungAAI</p>`,
+    text: `Chào ${customerName(event)},\n\nCảm ơn bạn đã quan tâm.\n\nHungAAI`,
   };
 }
 

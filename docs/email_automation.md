@@ -44,6 +44,7 @@ supabase secrets set SITE_URL="https://your-site.com"
 supabase secrets set SERVICE_ROLE_KEY="your-service-role-key"
 ```
 
+`EMAIL_FROM` must use a domain verified in Resend. Gmail/Yahoo sender addresses will be rejected because you cannot verify their DNS records in your Resend account.
 `EMAIL_REPLY_TO` and `SITE_URL` are optional. `SERVICE_ROLE_KEY` is required by `process-email-queue` so it can read and update `email_events` without exposing table permissions to the frontend. Supabase does not allow custom secret names that start with `SUPABASE_`, so use `SERVICE_ROLE_KEY`.
 
 ## Deploy Functions
