@@ -17,7 +17,7 @@ create table if not exists public.email_events (
   max_attempts integer not null default 3,
   resend_id text,
   last_error text,
-  lead_id bigint,
+  lead_id text,
   customer_id bigint,
   order_id bigint,
   created_at timestamptz not null default now(),
@@ -64,7 +64,10 @@ alter table public.email_events
   add column if not exists last_error text;
 
 alter table public.email_events
-  add column if not exists lead_id bigint;
+  add column if not exists lead_id text;
+
+alter table public.email_events
+  alter column lead_id type text using lead_id::text;
 
 alter table public.email_events
   add column if not exists customer_id bigint;
@@ -166,7 +169,7 @@ begin
         'want_join_community', coalesce((row_data->>'want_join_community')::boolean, false)
       ),
       now(),
-      new.id
+      new.id::text
     ),
     (
       'lead_value_day_2',
@@ -176,7 +179,7 @@ begin
       'lead_value_day_2',
       jsonb_build_object('name', lead_name),
       now() + interval '2 days',
-      new.id
+      new.id::text
     ),
     (
       'lead_offer_day_3',
@@ -186,7 +189,7 @@ begin
       'lead_offer_day_3',
       jsonb_build_object('name', lead_name),
       now() + interval '3 days',
-      new.id
+      new.id::text
     );
 
   return new;
