@@ -11,11 +11,11 @@ supabase secrets set RESEND_API_KEY="re_xxx"
 supabase secrets set EMAIL_FROM="HungAAI <noreply@your-domain.com>"
 supabase secrets set EMAIL_REPLY_TO="support@your-domain.com"
 supabase secrets set SITE_URL="https://your-site.com"
-supabase secrets set SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
+supabase secrets set SERVICE_ROLE_KEY="your-service-role-key"
 ```
 
 `EMAIL_REPLY_TO` and `SITE_URL` are optional. `SITE_URL` is used for CORS; if it is not set, the function allows all origins.
-`SUPABASE_SERVICE_ROLE_KEY` is required by `process-email-queue`, not by the direct `send-email` function.
+`SERVICE_ROLE_KEY` is required by `process-email-queue`, not by the direct `send-email` function. Supabase does not allow custom secret names that start with `SUPABASE_`, so use `SERVICE_ROLE_KEY`.
 
 ## Deploy
 

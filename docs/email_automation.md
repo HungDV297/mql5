@@ -41,10 +41,10 @@ supabase secrets set RESEND_API_KEY="re_xxx"
 supabase secrets set EMAIL_FROM="HungAAI <noreply@your-domain.com>"
 supabase secrets set EMAIL_REPLY_TO="support@your-domain.com"
 supabase secrets set SITE_URL="https://your-site.com"
-supabase secrets set SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
+supabase secrets set SERVICE_ROLE_KEY="your-service-role-key"
 ```
 
-`EMAIL_REPLY_TO` and `SITE_URL` are optional. `SUPABASE_SERVICE_ROLE_KEY` is required by `process-email-queue` so it can read and update `email_events` without exposing table permissions to the frontend.
+`EMAIL_REPLY_TO` and `SITE_URL` are optional. `SERVICE_ROLE_KEY` is required by `process-email-queue` so it can read and update `email_events` without exposing table permissions to the frontend. Supabase does not allow custom secret names that start with `SUPABASE_`, so use `SERVICE_ROLE_KEY`.
 
 ## Deploy Functions
 
@@ -95,6 +95,6 @@ Every 5 or 15 minutes: POST /process-email-queue {"limit": 20}
 
 Do not give anon users direct insert/update/select policies on `email_events`.
 
-The public frontend never sees `RESEND_API_KEY` or `SUPABASE_SERVICE_ROLE_KEY`. It only inserts normal `leads` and `orders`; database triggers create the queue rows.
+The public frontend never sees `RESEND_API_KEY` or `SERVICE_ROLE_KEY`. It only inserts normal `leads` and `orders`; database triggers create the queue rows.
 
 The current MVP allows public calls to `process-email-queue`. It does not accept arbitrary email content, but it can still be triggered repeatedly. Before production, add a shared cron secret header or require JWT/service calls for scheduled processing.

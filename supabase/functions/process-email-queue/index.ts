@@ -1,7 +1,7 @@
 const RESEND_API_URL = "https://api.resend.com/emails";
 const SUPABASE_URL =
   Deno.env.get("SUPABASE_URL") ?? "https://rhqmzccyvfiitojeqkfr.supabase.co";
-const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+const SERVICE_ROLE_KEY = Deno.env.get("SERVICE_ROLE_KEY") ?? "";
 const SUPABASE_REST_BASE = `${SUPABASE_URL}/rest/v1`;
 
 type EmailEvent = {
@@ -139,13 +139,13 @@ function renderTemplate(event: EmailEvent) {
 }
 
 async function supabaseFetch(path: string, init: RequestInit = {}) {
-  if (!SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error("Missing SUPABASE_SERVICE_ROLE_KEY.");
+  if (!SERVICE_ROLE_KEY) {
+    throw new Error("Missing SERVICE_ROLE_KEY.");
   }
 
   const headers = new Headers(init.headers);
-  headers.set("apikey", SUPABASE_SERVICE_ROLE_KEY);
-  headers.set("authorization", `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`);
+  headers.set("apikey", SERVICE_ROLE_KEY);
+  headers.set("authorization", `Bearer ${SERVICE_ROLE_KEY}`);
   if (init.body != null && !headers.has("content-type")) {
     headers.set("content-type", "application/json");
   }
